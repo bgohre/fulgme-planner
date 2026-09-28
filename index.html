@@ -1,0 +1,2511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FULGME Academic Year Planner</title>
+<style>
+:root{
+  --pur:#0B3C5D; --pur2:#2F6F95; --pur-tint:#EDF3F8; --pur-line:#CBDCE9;
+  --gold:#CFAF5A; --gold-dark:#7A5F14; --gold-muted:#E6D3A3;
+  --ink:#1B222A; --slate:#4A5560; --mute:#6C7680;
+  --bg:#F5F7FA; --card:#FFFFFF; --line:#DDE4EB; --line2:#EBF0F4;
+  --red:#A81E17; --red-bg:#FDECEA;
+  --amb:#7A5100; --amb-bg:#FDF3E0;
+  --grn:#14624A; --grn-bg:#E7F4EF;
+  --blu:#1A5578; --blu-bg:#E8F1F7;
+  --gry:#4A4A55; --gry-bg:#EFEFF4;
+  --r:10px; --sh:0 1px 2px rgba(11,60,93,.06),0 4px 12px rgba(11,60,93,.05);
+  --f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;padding:0}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:650;letter-spacing:-.01em}
+h1{font-size:1.5rem}h2{font-size:1.15rem}h3{font-size:1rem}h4{font-size:.9rem}
+p{margin:0 0 .6rem}
+a{color:var(--pur)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--pur2);outline-offset:2px;border-radius:4px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- shell ---------- */
+.app{display:flex;min-height:100vh}
+.side{width:236px;flex:0 0 236px;background:#0B2C44;color:#D6E2EC;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{padding:1.1rem 1rem .85rem;border-bottom:2px solid var(--gold)}
+.brand .nm{font-weight:700;font-size:.95rem;color:#fff;letter-spacing:.01em}
+.brand .ay{font-size:.76rem;color:#A9C2D4;margin-top:.15rem}
+.brand .td{font-size:.72rem;color:#8FA9BC;margin-top:.3rem}
+.navs{padding:.5rem .5rem 1.5rem;flex:1}
+.navs .grp{font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:#7E9CB2;padding:.85rem .6rem .3rem}
+.navb{display:flex;align-items:center;gap:.5rem;width:100%;text-align:left;background:none;border:0;color:#D6E2EC;padding:.48rem .6rem;border-radius:7px;cursor:pointer;font-size:.875rem}
+.navb:hover{background:rgba(255,255,255,.08);color:#fff}
+.navb[aria-current="page"]{background:#2F6F95;color:#fff;font-weight:600}
+.navb .ic{width:1.05rem;text-align:center;opacity:.9;font-size:.9rem}
+.navb .ct{margin-left:auto;font-size:.72rem;background:rgba(255,255,255,.16);border-radius:20px;padding:0 .4rem;min-width:1.25rem;text-align:center}
+.navb[aria-current="page"] .ct{background:rgba(255,255,255,.28)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{background:var(--card);border-bottom:1px solid var(--line);padding:.7rem 1.25rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:30}
+.top h1{flex:0 0 auto;margin-right:.4rem}
+.top .sub{color:var(--mute);font-size:.82rem;flex:1 1 200px;min-width:0}
+.wrap{padding:1.1rem 1.25rem 3rem;max-width:1180px;width:100%}
+.menubtn{display:none}
+
+/* ---------- controls ---------- */
+.btn{background:var(--card);border:1px solid var(--line);border-radius:7px;padding:.36rem .7rem;font-size:.84rem;font-weight:550;cursor:pointer;color:var(--ink)}
+.btn:hover{border-color:var(--pur2);color:var(--pur)}
+.btn.pri{background:var(--pur);border-color:var(--pur);color:#fff}
+.btn.pri:hover{background:var(--pur2);border-color:var(--pur2);color:#fff}
+.btn.dgr{color:var(--red);border-color:#E7C9C6}
+.btn.dgr:hover{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.btn.sm{padding:.2rem .48rem;font-size:.76rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+label{font-size:.78rem;font-weight:600;color:var(--slate);display:block;margin-bottom:.2rem}
+input[type=text],input[type=date],input[type=email],select,textarea{
+  width:100%;background:var(--card);border:1px solid var(--line);border-radius:7px;padding:.4rem .55rem;font-size:.87rem}
+input:hover,select:hover,textarea:hover{border-color:#C9C9D6}
+textarea{resize:vertical;min-height:4.5rem;line-height:1.5}
+.fld{margin-bottom:.7rem}
+.row{display:grid;gap:.7rem}
+.row.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.row.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.row>*{min-width:0}
+.bar{display:flex;gap:.45rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:.9rem}
+.bar .fld{margin:0}
+.bar select,.bar input{min-width:8.5rem;width:auto}
+.bar .grow{flex:1 1 180px}
+.bar .grow input{width:100%}
+
+/* ---------- cards ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:1rem;margin-bottom:1rem}
+.card>h2,.card>h3{margin-bottom:.55rem}
+.card .hd{display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap}
+.card .hd h2,.card .hd h3{margin:0}
+.card .hd .sp{margin-left:auto}
+.grid{display:grid;gap:1rem}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid>*{min-width:0}
+.muted{color:var(--mute);font-size:.84rem}
+.tiny{font-size:.76rem;color:var(--mute)}
+.empty{color:var(--mute);font-size:.86rem;padding:.8rem;text-align:center;border:1px dashed var(--line);border-radius:8px;background:#FBFBFD}
+
+/* ---------- chips ---------- */
+.chip{display:inline-flex;align-items:center;gap:.25rem;font-size:.72rem;font-weight:650;padding:.1rem .45rem;border-radius:20px;border:1px solid transparent;white-space:nowrap}
+.c-red{background:var(--red-bg);color:var(--red);border-color:#EED2CF}
+.c-amb{background:var(--amb-bg);color:var(--amb);border-color:#EDDCBC}
+.c-grn{background:var(--grn-bg);color:var(--grn);border-color:#C8E3D9}
+.c-blu{background:var(--blu-bg);color:var(--blu);border-color:#C9DEEC}
+.c-gry{background:var(--gry-bg);color:var(--gry);border-color:#DCDCE5}
+.c-pur{background:var(--pur-tint);color:var(--pur);border-color:var(--pur-line)}
+.chip.tent{border-style:dashed;font-weight:600}
+.role-acc{background:#E7EEF4;color:#0B3C5D;border-color:#C6D8E5}
+.role-gi{background:#E6F1EE;color:#0F5544;border-color:#C6E0D8}
+.role-both{background:#EFEFF4;color:#45454F;border-color:#DCDCE5}
+.role-pers{background:#F9F2E2;color:#7A5F14;border-color:#EADFC2}
+
+/* ---------- tables / lists ---------- */
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th{text-align:left;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);font-weight:700;padding:.4rem .5rem;border-bottom:1px solid var(--line)}
+td{padding:.5rem;border-bottom:1px solid var(--line2);vertical-align:top}
+tbody tr:hover{background:#FAFAFD}
+.tw{overflow-x:auto}
+
+.item{display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .6rem;border:1px solid var(--line);border-radius:8px;background:var(--card);margin-bottom:.4rem}
+.item.od{border-left:4px solid var(--red)}
+.item.soon{border-left:4px solid var(--amb)}
+.item.done{opacity:.62}
+.item.done .t{text-decoration:line-through}
+.item.blk{border-left:4px solid var(--gry)}
+.item .cb{margin-top:.18rem;width:1.05rem;height:1.05rem;flex:0 0 auto;cursor:pointer;accent-color:var(--pur)}
+.item .bd{flex:1;min-width:0}
+.item .t{font-weight:600;font-size:.88rem;overflow-wrap:anywhere}
+.item .meta{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.25rem;align-items:center}
+.item .acts{display:flex;gap:.25rem;flex-wrap:wrap;margin-left:auto;align-items:flex-start}
+
+/* ---------- dashboard ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-bottom:1rem}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.7rem .85rem;box-shadow:var(--sh);text-align:left;cursor:pointer}
+.kpi:hover{border-color:var(--pur2)}
+.kpi .n{font-size:1.65rem;font-weight:700;line-height:1.1}
+.kpi .l{font-size:.75rem;color:var(--mute);margin-top:.15rem;font-weight:600}
+.kpi.r .n{color:var(--red)}.kpi.a .n{color:var(--amb)}.kpi.b .n{color:var(--blu)}.kpi.p .n{color:var(--pur)}
+
+/* ---------- calendar ---------- */
+.cal{width:100%;border-collapse:collapse;table-layout:fixed}
+.cal th{text-align:center;font-size:.68rem;padding:.35rem .2rem}
+.cal td{border:1px solid var(--line2);height:5.6rem;padding:.25rem;vertical-align:top;font-size:.74rem}
+.cal td.out{background:#FAFAFC;color:#AEAEBC}
+.cal td.today{background:var(--pur-tint);border-color:var(--pur-line)}
+.cal .dn{font-weight:700;font-size:.75rem;display:block;margin-bottom:.15rem}
+.cal .ev{display:block;font-size:.68rem;padding:.06rem .2rem;border-radius:3px;margin-bottom:.1rem;background:var(--pur-tint);color:#3E2A66;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;border:0;width:100%;text-align:left}
+.cal .ev.od{background:var(--red-bg);color:var(--red)}
+.cal .ev.dn2{background:var(--grn-bg);color:var(--grn);text-decoration:line-through}
+
+/* ---------- month page ---------- */
+.glance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.glance>*{min-width:0}
+.glist{list-style:none;margin:0;padding:0}
+.glist li{display:flex;gap:.5rem;align-items:flex-start;padding:.34rem 0;border-bottom:1px solid var(--line2);font-size:.85rem}
+.glist li:last-child{border-bottom:0}
+.glist .gadd{flex:0 0 auto;margin-left:auto}
+.weeks{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:.6rem}
+.wk{border:1px solid var(--line);border-radius:8px;padding:.55rem .65rem;background:var(--card)}
+.wk .wh{font-size:.72rem;font-weight:700;color:var(--pur);letter-spacing:.04em;text-transform:uppercase}
+.wk .wd{font-size:.78rem;color:var(--mute);margin-bottom:.3rem}
+.wk .wl{font-size:.78rem;margin:.1rem 0}
+.wk.now{border-color:var(--pur2);box-shadow:0 0 0 2px var(--pur-tint)}
+
+/* ---------- modal ---------- */
+.ov{position:fixed;inset:0;background:rgba(24,20,38,.5);display:flex;align-items:flex-start;justify-content:center;
+  padding:2.2rem 1rem;z-index:100;overflow-y:auto}
+.ov[hidden]{display:none}
+.mod{background:var(--card);border-radius:12px;max-width:640px;width:100%;box-shadow:0 18px 50px rgba(20,20,40,.3);padding:1.1rem 1.2rem 1.2rem}
+.mod.wide{max-width:860px}
+.mod h2{margin-bottom:.15rem}
+.mod .mf{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap}
+.mod .mf .sp{margin-left:auto}
+
+/* ---------- misc ---------- */
+.note{background:var(--pur-tint);border-left:4px solid var(--pur2);border-radius:0 8px 8px 0;padding:.65rem .85rem;font-size:.85rem;margin-bottom:1rem}
+.warn{background:var(--amb-bg);border-left:4px solid var(--amb);border-radius:0 8px 8px 0;padding:.65rem .85rem;font-size:.85rem;margin-bottom:1rem}
+.toast{position:fixed;left:50%;bottom:1.4rem;transform:translateX(-50%);background:#0B2C44;color:#fff;padding:.55rem 1rem;
+  border-radius:8px;font-size:.85rem;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+.toast[hidden]{display:none}
+details.acc{border:1px solid var(--line);border-radius:8px;margin-bottom:.5rem;background:var(--card)}
+details.acc>summary{cursor:pointer;padding:.55rem .75rem;font-weight:600;font-size:.88rem;list-style:none}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary::before{content:"\25B8";display:inline-block;margin-right:.45rem;transition:transform .15s;color:var(--pur)}
+details.acc[open]>summary::before{transform:rotate(90deg)}
+details.acc>div{padding:0 .75rem .75rem}
+.tabs{display:flex;gap:.3rem;border-bottom:1px solid var(--line);margin-bottom:.9rem;flex-wrap:wrap}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:.45rem .7rem;font-size:.86rem;font-weight:600;color:var(--slate);cursor:pointer}
+.tab:hover{color:var(--pur)}
+.tab[aria-selected="true"]{color:var(--pur);border-bottom-color:var(--pur)}
+
+
+/* ---------- sign-in ---------- */
+.authwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;
+  background:linear-gradient(160deg,#0B2C44 0%,#0B3C5D 55%,#14507A 100%)}
+.authcard{background:var(--card);border-radius:14px;box-shadow:0 20px 60px rgba(4,20,33,.45);
+  max-width:420px;width:100%;padding:1.6rem 1.6rem 1.4rem;border-top:5px solid var(--gold)}
+.authcard .wordmark{font-weight:800;letter-spacing:.06em;color:var(--pur);font-size:1.35rem}
+.authcard .wordmark .tm{font-size:.5em;vertical-align:super;color:var(--gold-dark)}
+.authcard .tag{color:var(--slate);font-size:.86rem;margin:.1rem 0 1rem}
+.authcard .err{background:var(--red-bg);color:var(--red);border-radius:7px;padding:.5rem .7rem;font-size:.82rem;margin-bottom:.7rem}
+.authcard .ok{background:var(--grn-bg);color:var(--grn);border-radius:7px;padding:.5rem .7rem;font-size:.82rem;margin-bottom:.7rem}
+.authcard .alt{margin-top:.9rem;font-size:.8rem;color:var(--mute)}
+.authcard .alt button{background:none;border:0;color:var(--pur);font-weight:600;cursor:pointer;padding:0;font-size:.8rem;text-decoration:underline}
+.authfoot{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.72rem;color:var(--mute)}
+.acct{padding:.7rem 1rem;border-top:1px solid rgba(255,255,255,.14);font-size:.75rem;color:#A9C2D4;word-break:break-all}
+.acct .who{color:#fff;font-weight:600;margin-bottom:.3rem}
+.acct button{background:none;border:1px solid rgba(255,255,255,.3);color:#D6E2EC;border-radius:6px;
+  padding:.2rem .55rem;font-size:.74rem;cursor:pointer}
+.acct button:hover{border-color:var(--gold);color:#fff}
+.sync{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;margin-top:.45rem;padding:.12rem .5rem;border-radius:20px;background:rgba(255,255,255,.1);color:#C7D8E4}
+.sync .dot{width:.5rem;height:.5rem;border-radius:50%;background:#A9C2D4}
+.sync.live .dot{background:#8FD8B8}
+.sync.off .dot{background:#F0A69A}
+
+@media (max-width:900px){
+  .g2,.g3,.glance,.row.c2,.row.c3{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;z-index:60;transform:translateX(-100%);transition:transform .2s;height:100vh}
+  .side.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.4)}
+  .menubtn{display:inline-flex}
+  .wrap{padding:1rem .8rem 3rem}
+  .top{padding:.6rem .8rem}
+}
+@media print{
+  .side,.top,.noprint,.btn,.tabs{display:none!important}
+  body{background:#fff;font-size:11pt}
+  .wrap{padding:0;max-width:none}
+  .card{box-shadow:none;border:1px solid #bbb;break-inside:avoid;page-break-inside:avoid}
+  .cal td{height:4.2rem}
+  .printonly{display:block!important}
+}
+.printonly{display:none}
+</style>
+</head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+<script>
+/* =====================================================================
+   FULGME PLANNER CONFIGURATION
+   The only two lines a site owner ever edits are inside the braces
+   below. Both values come from the Supabase dashboard:
+   Project Settings, then API.
+     - Project URL        looks like  https://abcdefgh.supabase.co
+     - anon public key    a long string starting with  eyJ
+   The anon key is designed to be public. It grants nothing by itself;
+   row-level security in the database decides what each signed-in
+   account can see, which is only its own rows.
+   ===================================================================== */
+const FULGME_CONFIG = {
+  SUPABASE_URL: "https://rvrmoejktfhurbssqeiq.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable__aKF6FzSZVtRiMLyV1ONZQ_8-CPDliJ"
+};
+</script>
+
+<div class="authwrap" id="auth" hidden>
+  <div class="authcard">
+    <div class="wordmark">FULGME<span class="tm">TM</span></div>
+    <div class="tag">Academic Year Planner &middot; July 2026 to June 2027<br>
+      For professionals who run medical education programs.</div>
+    <div id="authMsg"></div>
+    <form id="authForm">
+      <div class="fld"><label for="au_email">Email</label>
+        <input type="email" id="au_email" autocomplete="email" required></div>
+      <div class="fld" id="pwRow"><label for="au_pw">Password</label>
+        <input type="password" id="au_pw" autocomplete="current-password" minlength="8"></div>
+      <div class="fld" id="pw2Row" hidden><label for="au_pw2">Confirm password</label>
+        <input type="password" id="au_pw2" autocomplete="new-password" minlength="8"></div>
+      <button class="btn pri" id="authGo" type="submit" style="width:100%;padding:.55rem">Sign in</button>
+    </form>
+    <div class="alt" id="authAlt"></div>
+    <div class="authfoot">
+      Your planner is private to your account. Do not store confidential trainee performance
+      information here; keep that in your institution&rsquo;s own systems.
+      A service of the Forum for United Leaders in Graduate Medical Education &middot;
+      <a href="https://www.fulgme.org" target="_blank" rel="noopener noreferrer">fulgme.org</a>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="app" hidden>
+  <nav class="side" id="side" aria-label="Sections">
+    <div class="brand">
+      <div class="nm">FULGME Planner</div>
+      <div class="ay">Academic Year 2026 &ndash; 2027</div>
+      <div class="td" id="todayLbl">&nbsp;</div>
+      <div class="sync" id="syncLbl"><span class="dot"></span><span id="syncTxt">Connecting</span></div>
+    </div>
+    <div class="navs" id="navs"></div>
+    <div class="acct">
+      <div class="who" id="acctEmail"></div>
+      <button id="signOutBtn" type="button">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <header class="top">
+      <button class="btn menubtn" id="menuBtn" aria-label="Open navigation" aria-expanded="false">&#9776;</button>
+      <h1 id="viewTitle">Dashboard</h1>
+      <div class="sub" id="viewSub"></div>
+      <div id="roleSwitch" class="noprint" role="group" aria-label="Role view">
+        <label class="sr" for="roleSel">Role view</label>
+        <select id="roleSel">
+          <option value="all">Both roles (combined)</option>
+          <option value="acc">Accreditation oversight only</option>
+          <option value="gi">Program management only</option>
+        </select>
+      </div>
+    </header>
+    <main class="wrap" id="view" tabindex="-1"></main>
+  </div>
+</div>
+
+<div class="ov" id="ov" hidden>
+  <div class="mod" id="mod" role="dialog" aria-modal="true" aria-labelledby="modTitle"></div>
+</div>
+<div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   FULGME ACADEMIC YEAR PLANNER  ·  AY 2026-2027
+   Static app served from GitHub Pages. Each user signs in and
+   their planner is stored privately in the FULGME Supabase
+   project, enforced by row-level security.
+   ============================================================ */
+
+const SEED = {"months":[{"key":"2026-07","label":"July 2026","focus":"Onboarding | Accreditation | Recruitment | Systems Reset","theme":"Role and operations","reflect":"Starting the Year","gme":["New resident and fellow orientation; verify licensure, DEA, NPI, badge, and EMR access","ACGME ADS Annual Update opens; begin program and institutional data collection","National GME Census and GME Track resident survey period opens","Prior-year Annual Program Evaluation documentation finalized and filed","Confirm program listings are accurate in ADS and FREIDA before applicants review them","Reset systems: rosters, rotation schedules, evaluation templates, prior-year archiving"],"ume":["New academic year rosters, course and clerkship assignments, and LMS configuration","AMCAS application season underway; admissions committee training and file review begin","Orientation for the entering class; white coat ceremony logistics","Curriculum committee calendar set; course and clerkship review schedule published","VSLO visiting student applications open for the coming year"],"shared":["Confirm committee rosters, charters, and full-year meeting calendars","Renew memberships, subscriptions, and conference registrations","Update websites, handbooks, and public-facing program information","Verify policy version control; archive superseded versions with dates"],"ahead":["ACGME ADS Annual Update deadline for programs without case log requirements","Recruitment committee meetings and interview scheduling","Semiannual evaluation planning and CCC calendar confirmation"],"prompts":["What worked well in last year's onboarding, and what single change would make the biggest difference this July?","Describe a system you inherited that no longer fits how the work actually happens.","Which working relationship would most benefit from deliberate attention this year?","What does a successful year look like for you in concrete, observable terms?","What are you carrying over from last year that you should put down?"]},{"key":"2026-08","label":"August 2026","focus":"Accreditation | Recruitment | Evaluations","theme":"Systems and process","reflect":"Systems and Structure","gme":["ACGME ADS Annual Update deadline, programs without case log requirements","Recruitment committee meetings; interview date selection and scheduling logic","Plan semiannual evaluations; confirm CCC calendar and underlying data sources","Verify faculty rosters and scholarly activity entries are current in ADS"],"ume":["Entering class matriculation complete; Matriculating Student Questionnaire window","Clerkship orientation and early rotation launch","MSPE drafting begins for the graduating class; confirm noteworthy characteristics process","Course evaluation cycle opens for summer and early fall courses"],"shared":["Verify learner access, badges, health clearance, and required training completions","First standing committee meetings of the year; approve prior-year minutes","Confirm affiliation agreements and program letters of agreement are current and signed"],"ahead":["ADS Annual Update deadline for programs with case log requirements","MSPE finalization ahead of release","Fall CCC preparation and data compilation"],"prompts":["Where does information get stuck in your current workflow, and who feels it first?","If a colleague had to run your calendar tomorrow, what would they be unable to find?","What task do you repeat monthly that could be templated, delegated, or eliminated?","Describe a recent moment when a process protected someone. What made it work?","Which documentation practice would you defend confidently in front of a review team?"]},{"key":"2026-09","label":"September 2026","focus":"Accreditation | Recruitment | Data","theme":"Learner support","reflect":"The Learner Experience","gme":["ACGME ADS Annual Update deadline, programs with case log requirements","National GME Census deadline; FREIDA listing refresh","Fall CCC preparation: agenda, milestone data, evaluation completion checks","ERAS applications released to programs; begin review and interview invitations"],"ume":["MSPE finalization ahead of release to programs","LCME or COCA annual data collection and questionnaires, per current cycle","Secondary application review; admissions interview season begins","Curriculum committee fall course and clerkship reviews"],"shared":["Quarterly metrics pull; refresh leadership dashboards","Work hours and duty hours monitoring review; document any follow-up","Confirm evaluation instruments are live and assigned correctly"],"ahead":["Interview season at volume for both admissions and GME recruitment","MSPE release to programs","Quarterly learner reviews and budget planning window opens"],"prompts":["What do learners say about your institution that leadership does not hear?","Recall a learner who struggled. Where did the system work, and where did it fall short?","How do you know whether feedback actually reaches the people who need it?","What barrier could you remove this month that would make a learner's week easier?","Which voice is missing from the rooms where learner decisions get made?"]},{"key":"2026-10","label":"October 2026","focus":"Recruitment | Evaluations | Governance","theme":"Communication and influence","reflect":"Communication and Influence","gme":["Residency and fellowship interviews underway","Quarterly resident and fellow reviews, if applicable","Monitor evaluation completion rates; escalate delinquencies through documented channels","Stipend and budget planning for the coming fiscal year"],"ume":["MSPE release to programs","Admissions interviews at volume; interviewer calibration and training","Mid-clerkship feedback verification and documentation","Course and clerkship evaluation data reviewed for continuous quality improvement"],"shared":["Conference season; capture takeaways and CME or CEU documentation","Policy review cycle: draft revisions for committee consideration","Confirm minutes from prior meetings are approved and filed"],"ahead":["ACGME Milestones fall reporting window opens","Fall CCC and PEC meetings","Rank list planning and ranking meeting logistics"],"prompts":["Describe a message you delivered recently that landed well. What made it work?","Where are you the bottleneck for a decision, and what would it take to hand it off?","What difficult conversation are you avoiding, and what is the cost of the delay?","How do you adjust the same message for an executive, a program leader, and a learner?","What do you want a senior leader to understand about your work that they currently do not?"]},{"key":"2026-11","label":"November 2026","focus":"Accreditation | Recruitment | Reporting","theme":"Governance and decisions","reflect":"Governance and Decisions","gme":["ACGME Milestones fall reporting window opens","Fall CCC and PEC meetings; document decisions, rationale, and follow-up owners","Rank list planning; confirm ranking meeting logistics against NRMP deadlines","Institutional items in cycle: Statement of Commitment, PLAs, special reviews"],"ume":["Admissions committee decisions and offers, per institutional cycle","National meeting season; capture reportable takeaways","Mid-year curriculum committee reporting","Student promotions and progress committee meetings"],"shared":["Verify committee minutes are current, approved, and archived","Confirm year-to-date compliance training completion across learners and faculty","Check that action items from prior meetings have documented closure"],"ahead":["Milestones fall reporting closes","Semiannual program director reviews with learners","Term close-out and grade or narrative assessment submission"],"prompts":["Which committee decision this year had the most durable impact, and why?","Where is ownership unclear in your governance structure?","What would your minutes tell an outside reviewer about how decisions get made here?","Describe a time you changed your position after hearing new information.","Which recurring meeting could be shortened, merged, or ended without loss?"]},{"key":"2026-12","label":"December 2026","focus":"Evaluations | Reporting | Close-Out","theme":"Assessment and accuracy","reflect":"Assessment and Honesty","gme":["ACGME Milestones fall reporting closes","Semiannual program director reviews with residents and fellows","Final National GME Census deadline, if applicable","Evaluation quality checks; document remediation plans and learning plans"],"ume":["Semester close: grade submission, narrative assessments, incompletes tracked","Student progress committee review before term end","Admissions interim reporting"],"shared":["Fiscal mid-year budget check","Confirm document retention and archiving before the calendar year closes","Set the January committee calendar and distribute agendas early"],"ahead":["ACGME survey preparation and communication to learners and faculty","Handbook updates for the next academic year","Spring term launch and Match preparation"],"prompts":["What did you get wrong this year, and what did it teach you?","Where does your data tell a different story than your instincts?","Which metric do you report because it is required, and which do you actually use?","What did you describe as on track that was not?","What deserves to be documented before the year closes and memory fades?"]},{"key":"2027-01","label":"January 2027","focus":"Surveys | Handbooks | Portfolios","theme":"Professional development","reflect":"Direction","gme":["Prepare for ACGME Resident, Fellow, and Faculty Surveys; communicate purpose and timing","Prepare for in-training examination administration","Update program handbooks for the next academic year","Refresh scholarly activity records and learner portfolios"],"ume":["Spring term launch; roster and LMS verification","Match preparation support for graduating students","Accreditation self-study or data collection instrument work, if in cycle","Course and clerkship syllabi updated for spring"],"shared":["Annual policy review kickoff with clear owners and target committee dates","Update onboarding materials for the next academic year","Begin succession and coverage planning for summer transitions"],"ahead":["ACGME survey administration window","Ranking meetings and rank order list certification","Graduation questionnaire administration"],"prompts":["What is the single most important problem you could work on in the next six months?","What did you agree to last year that you would decline now?","Which skill, developed this year, would change what work becomes available to you?","Describe the version of your role you want to grow into.","What are you protecting time for, and is your calendar consistent with that answer?"]},{"key":"2027-02","label":"February 2027","focus":"Surveys | Ranking | Assessment","theme":"Capacity and sustainability","reflect":"Pressure and Capacity","gme":["ACGME Resident, Fellow, and Faculty Survey administration window","ACGME Annual Educational Conference","Residency ranking meeting; certify rank order list against NRMP deadlines","Fellowship in-service examinations, if applicable"],"ume":["AAMC Graduation Questionnaire administration opens","Match Week preparation; contingency planning with student affairs","Spring curriculum committee reviews"],"shared":["Evaluation completion quality checks ahead of spring review meetings","Monitor survey response rates; address gaps through leadership channels","Confirm accreditation document repositories are current"],"ahead":["Match Week and Match Day","Incoming class onboarding launch","Graduation and commencement planning"],"prompts":["What does your workload look like in your busiest week, and what breaks first?","Where are you personally compensating for a gap that should be fixed structurally?","Describe how you recover after a demanding stretch. Is it working?","What would you stop doing if no one noticed?","Who on your team is closest to overload, and what have you done about it?"]},{"key":"2027-03","label":"March 2027","focus":"Match | Graduation Planning | Onboarding","theme":"Transitions","reflect":"Transitions","gme":["NRMP Match Week and Match Day","Incoming class onboarding launch: contracts, credentialing, licensure, background checks","End-of-year program evaluation surveys prepared for faculty and learners","Review rosters, PLAs, affiliation agreements, and handbooks"],"ume":["Match Day events and student notification support","Graduation clearance tracking and degree audit","Residency placement data compiled for institutional reporting"],"shared":["Graduation and commencement planning with defined owners and deadlines","End-of-year evaluation planning and instrument review","Confirm summer orientation dates and reserve space early"],"ahead":["Spring CCC and PEC meeting preparation","Credentialing processing for incoming learners","Orientation build for July"],"prompts":["What does a departing learner or colleague take with them that is not written down anywhere?","Describe the handoff you are least confident about this spring.","What would you want your successor to know in their first week?","Which relationship built this year will outlast this academic year?","What improvement from this cycle must survive into the next one?"]},{"key":"2027-04","label":"April 2027","focus":"Governance | Credentialing | Transitions","theme":"Continuous improvement","reflect":"Improvement","gme":["Spring CCC and PEC meeting preparation","Credentialing and onboarding processing for incoming trainees","Policy revisions presented to PEC and GMEC","Archive recruitment files per institutional retention policy"],"ume":["Graduation clearance final review; honors and awards decisions","Incoming class deposits, matriculation prep, and orientation planning","Spring course and clerkship evaluations distributed"],"shared":["Orientation planning and schedule build for July","Confirm summer coverage and staffing","Verify that all annual policy revisions have a documented approval date"],"ahead":["Milestones spring reporting window opens","End-of-year surveys and annual program evaluations distributed","Commencement and recognition events"],"prompts":["What did you change this year because someone told you it was not working?","Where is your team doing high-effort work with low return?","What small fix, deferred repeatedly, would take an afternoon and save a month?","Describe a piece of feedback you received that was accurate and uncomfortable.","What will you measure next year that you did not measure this year?"]},{"key":"2027-05","label":"May 2027","focus":"Milestones | Surveys | Graduation","theme":"Team and recognition","reflect":"Recognition","gme":["ACGME Milestones spring reporting window opens","End-of-year surveys launched; annual program evaluations distributed","Graduation planning, faculty awards, alumni tracking, website edits","Spring CCC and PEC meetings held and documented"],"ume":["Commencement and hooding ceremony execution","Graduation Questionnaire completion push","Year-end course and clerkship reporting to the curriculum committee"],"shared":["Recognition events and reception planning","Verify all annual evaluations are distributed and tracked to completion","Confirm departing learner and staff access removal timelines"],"ahead":["Milestones spring reporting closes","Annual Program Evaluation meetings","Year-end verification, check-out, and archiving"],"prompts":["Whose work made your year easier, and have you told them plainly?","What accomplishment are you at risk of moving past without acknowledging?","Describe someone whose growth you watched closely this year.","What did your team do well under pressure?","Which contribution of yours will still matter in three years?"]},{"key":"2027-06","label":"June 2027","focus":"Close-Out | Transitions | Verification","theme":"Close-out and handoff","reflect":"Close and Carry Forward","gme":["ACGME Milestones spring reporting closes","Annual Program Evaluation meetings held and documented","End-of-year evaluation and APE quality checks","Check-out process; verification of training and final completion letters","Institutional orientation for incoming trainees"],"ume":["Academic year close: final grades and narrative assessments","Year Two Questionnaire administration","Curriculum year-end review and quality improvement documentation"],"shared":["Archive the completed year: minutes, agendas, evaluations, decisions","Transition documentation for incoming staff and leadership","Set next year's committee calendar before July 1"],"ahead":["New learner orientation and onboarding","ADS Annual Update opens","Systems reset and prior-year file cleanup"],"prompts":["What is the most defensible thing you built this year?","Which problem you started the year with is genuinely solved?","What are you willing to leave unfinished, and why is that acceptable?","Describe the difference between how you started this year and how you are ending it.","What is the first thing you will change on July 1?"]}],"weeks":[{"n":1,"start":"2026-06-29","end":"2026-07-05","month":"2026-07"},{"n":2,"start":"2026-07-06","end":"2026-07-12","month":"2026-07"},{"n":3,"start":"2026-07-13","end":"2026-07-19","month":"2026-07"},{"n":4,"start":"2026-07-20","end":"2026-07-26","month":"2026-07"},{"n":5,"start":"2026-07-27","end":"2026-08-02","month":"2026-07"},{"n":6,"start":"2026-08-03","end":"2026-08-09","month":"2026-08"},{"n":7,"start":"2026-08-10","end":"2026-08-16","month":"2026-08"},{"n":8,"start":"2026-08-17","end":"2026-08-23","month":"2026-08"},{"n":9,"start":"2026-08-24","end":"2026-08-30","month":"2026-08"},{"n":10,"start":"2026-08-31","end":"2026-09-06","month":"2026-09"},{"n":11,"start":"2026-09-07","end":"2026-09-13","month":"2026-09"},{"n":12,"start":"2026-09-14","end":"2026-09-20","month":"2026-09"},{"n":13,"start":"2026-09-21","end":"2026-09-27","month":"2026-09"},{"n":14,"start":"2026-09-28","end":"2026-10-04","month":"2026-10"},{"n":15,"start":"2026-10-05","end":"2026-10-11","month":"2026-10"},{"n":16,"start":"2026-10-12","end":"2026-10-18","month":"2026-10"},{"n":17,"start":"2026-10-19","end":"2026-10-25","month":"2026-10"},{"n":18,"start":"2026-10-26","end":"2026-11-01","month":"2026-10"},{"n":19,"start":"2026-11-02","end":"2026-11-08","month":"2026-11"},{"n":20,"start":"2026-11-09","end":"2026-11-15","month":"2026-11"},{"n":21,"start":"2026-11-16","end":"2026-11-22","month":"2026-11"},{"n":22,"start":"2026-11-23","end":"2026-11-29","month":"2026-11"},{"n":23,"start":"2026-11-30","end":"2026-12-06","month":"2026-12"},{"n":24,"start":"2026-12-07","end":"2026-12-13","month":"2026-12"},{"n":25,"start":"2026-12-14","end":"2026-12-20","month":"2026-12"},{"n":26,"start":"2026-12-21","end":"2026-12-27","month":"2026-12"},{"n":27,"start":"2026-12-28","end":"2027-01-03","month":"2026-12"},{"n":28,"start":"2027-01-04","end":"2027-01-10","month":"2027-01"},{"n":29,"start":"2027-01-11","end":"2027-01-17","month":"2027-01"},{"n":30,"start":"2027-01-18","end":"2027-01-24","month":"2027-01"},{"n":31,"start":"2027-01-25","end":"2027-01-31","month":"2027-01"},{"n":32,"start":"2027-02-01","end":"2027-02-07","month":"2027-02"},{"n":33,"start":"2027-02-08","end":"2027-02-14","month":"2027-02"},{"n":34,"start":"2027-02-15","end":"2027-02-21","month":"2027-02"},{"n":35,"start":"2027-02-22","end":"2027-02-28","month":"2027-02"},{"n":36,"start":"2027-03-01","end":"2027-03-07","month":"2027-03"},{"n":37,"start":"2027-03-08","end":"2027-03-14","month":"2027-03"},{"n":38,"start":"2027-03-15","end":"2027-03-21","month":"2027-03"},{"n":39,"start":"2027-03-22","end":"2027-03-28","month":"2027-03"},{"n":40,"start":"2027-03-29","end":"2027-04-04","month":"2027-04"},{"n":41,"start":"2027-04-05","end":"2027-04-11","month":"2027-04"},{"n":42,"start":"2027-04-12","end":"2027-04-18","month":"2027-04"},{"n":43,"start":"2027-04-19","end":"2027-04-25","month":"2027-04"},{"n":44,"start":"2027-04-26","end":"2027-05-02","month":"2027-04"},{"n":45,"start":"2027-05-03","end":"2027-05-09","month":"2027-05"},{"n":46,"start":"2027-05-10","end":"2027-05-16","month":"2027-05"},{"n":47,"start":"2027-05-17","end":"2027-05-23","month":"2027-05"},{"n":48,"start":"2027-05-24","end":"2027-05-30","month":"2027-05"},{"n":49,"start":"2027-05-31","end":"2027-06-06","month":"2027-06"},{"n":50,"start":"2027-06-07","end":"2027-06-13","month":"2027-06"},{"n":51,"start":"2027-06-14","end":"2027-06-20","month":"2027-06"},{"n":52,"start":"2027-06-21","end":"2027-06-27","month":"2027-06"}],"grids":[{"key":"2026-07","label":"July 2026","rows":[["2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-03","2026-07-04","2026-07-05"],["2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-11","2026-07-12"],["2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-18","2026-07-19"],["2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-25","2026-07-26"],["2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-01","2026-08-02"]]},{"key":"2026-08","label":"August 2026","rows":[["2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-01","2026-08-02"],["2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-08","2026-08-09"],["2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-15","2026-08-16"],["2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-22","2026-08-23"],["2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-29","2026-08-30"],["2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06"]]},{"key":"2026-09","label":"September 2026","rows":[["2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06"],["2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-13"],["2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-20"],["2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27"],["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04"]]},{"key":"2026-10","label":"October 2026","rows":[["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04"],["2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11"],["2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18"],["2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25"],["2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-10-31","2026-11-01"]]},{"key":"2026-11","label":"November 2026","rows":[["2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-10-31","2026-11-01"],["2026-11-02","2026-11-03","2026-11-04","2026-11-05","2026-11-06","2026-11-07","2026-11-08"],["2026-11-09","2026-11-10","2026-11-11","2026-11-12","2026-11-13","2026-11-14","2026-11-15"],["2026-11-16","2026-11-17","2026-11-18","2026-11-19","2026-11-20","2026-11-21","2026-11-22"],["2026-11-23","2026-11-24","2026-11-25","2026-11-26","2026-11-27","2026-11-28","2026-11-29"],["2026-11-30","2026-12-01","2026-12-02","2026-12-03","2026-12-04","2026-12-05","2026-12-06"]]},{"key":"2026-12","label":"December 2026","rows":[["2026-11-30","2026-12-01","2026-12-02","2026-12-03","2026-12-04","2026-12-05","2026-12-06"],["2026-12-07","2026-12-08","2026-12-09","2026-12-10","2026-12-11","2026-12-12","2026-12-13"],["2026-12-14","2026-12-15","2026-12-16","2026-12-17","2026-12-18","2026-12-19","2026-12-20"],["2026-12-21","2026-12-22","2026-12-23","2026-12-24","2026-12-25","2026-12-26","2026-12-27"],["2026-12-28","2026-12-29","2026-12-30","2026-12-31","2027-01-01","2027-01-02","2027-01-03"]]},{"key":"2027-01","label":"January 2027","rows":[["2026-12-28","2026-12-29","2026-12-30","2026-12-31","2027-01-01","2027-01-02","2027-01-03"],["2027-01-04","2027-01-05","2027-01-06","2027-01-07","2027-01-08","2027-01-09","2027-01-10"],["2027-01-11","2027-01-12","2027-01-13","2027-01-14","2027-01-15","2027-01-16","2027-01-17"],["2027-01-18","2027-01-19","2027-01-20","2027-01-21","2027-01-22","2027-01-23","2027-01-24"],["2027-01-25","2027-01-26","2027-01-27","2027-01-28","2027-01-29","2027-01-30","2027-01-31"]]},{"key":"2027-02","label":"February 2027","rows":[["2027-02-01","2027-02-02","2027-02-03","2027-02-04","2027-02-05","2027-02-06","2027-02-07"],["2027-02-08","2027-02-09","2027-02-10","2027-02-11","2027-02-12","2027-02-13","2027-02-14"],["2027-02-15","2027-02-16","2027-02-17","2027-02-18","2027-02-19","2027-02-20","2027-02-21"],["2027-02-22","2027-02-23","2027-02-24","2027-02-25","2027-02-26","2027-02-27","2027-02-28"]]},{"key":"2027-03","label":"March 2027","rows":[["2027-03-01","2027-03-02","2027-03-03","2027-03-04","2027-03-05","2027-03-06","2027-03-07"],["2027-03-08","2027-03-09","2027-03-10","2027-03-11","2027-03-12","2027-03-13","2027-03-14"],["2027-03-15","2027-03-16","2027-03-17","2027-03-18","2027-03-19","2027-03-20","2027-03-21"],["2027-03-22","2027-03-23","2027-03-24","2027-03-25","2027-03-26","2027-03-27","2027-03-28"],["2027-03-29","2027-03-30","2027-03-31","2027-04-01","2027-04-02","2027-04-03","2027-04-04"]]},{"key":"2027-04","label":"April 2027","rows":[["2027-03-29","2027-03-30","2027-03-31","2027-04-01","2027-04-02","2027-04-03","2027-04-04"],["2027-04-05","2027-04-06","2027-04-07","2027-04-08","2027-04-09","2027-04-10","2027-04-11"],["2027-04-12","2027-04-13","2027-04-14","2027-04-15","2027-04-16","2027-04-17","2027-04-18"],["2027-04-19","2027-04-20","2027-04-21","2027-04-22","2027-04-23","2027-04-24","2027-04-25"],["2027-04-26","2027-04-27","2027-04-28","2027-04-29","2027-04-30","2027-05-01","2027-05-02"]]},{"key":"2027-05","label":"May 2027","rows":[["2027-04-26","2027-04-27","2027-04-28","2027-04-29","2027-04-30","2027-05-01","2027-05-02"],["2027-05-03","2027-05-04","2027-05-05","2027-05-06","2027-05-07","2027-05-08","2027-05-09"],["2027-05-10","2027-05-11","2027-05-12","2027-05-13","2027-05-14","2027-05-15","2027-05-16"],["2027-05-17","2027-05-18","2027-05-19","2027-05-20","2027-05-21","2027-05-22","2027-05-23"],["2027-05-24","2027-05-25","2027-05-26","2027-05-27","2027-05-28","2027-05-29","2027-05-30"],["2027-05-31","2027-06-01","2027-06-02","2027-06-03","2027-06-04","2027-06-05","2027-06-06"]]},{"key":"2027-06","label":"June 2027","rows":[["2027-05-31","2027-06-01","2027-06-02","2027-06-03","2027-06-04","2027-06-05","2027-06-06"],["2027-06-07","2027-06-08","2027-06-09","2027-06-10","2027-06-11","2027-06-12","2027-06-13"],["2027-06-14","2027-06-15","2027-06-16","2027-06-17","2027-06-18","2027-06-19","2027-06-20"],["2027-06-21","2027-06-22","2027-06-23","2027-06-24","2027-06-25","2027-06-26","2027-06-27"],["2027-06-28","2027-06-29","2027-06-30","2027-07-01","2027-07-02","2027-07-03","2027-07-04"]]}],"recGME":[["Accreditation","Monitor accreditation correspondence and reports. Track program letters of agreement and affiliation agreements. Maintain the ADS record: faculty rosters, scholarly activity, block diagrams, participating sites. Schedule and document PEC and GMEC meetings. Track institutional review cycles, special reviews, and self-study timelines. Submit complement change requests as needed."],["Administration","Process visas, licensure, credentialing, and work hour data. Manage stipends, benefits, and budgets. Maintain the residency management system. Publish newsletters and internal communications. Coordinate exams, retreats, photographs, and scholarly events. Prepare audits and institutional reports."],["Evaluations","Distribute and monitor rotation evaluations. Track completion rates and escalate gaps. Administer program director and faculty evaluations on the established schedule. Maintain the evaluation calendar and instrument library."],["Governance and development","Plan committee meetings, retreats, and professional development sessions. Maintain charters, rosters, minutes, and action item logs. Verify that decisions are documented with rationale and owner."],["Recruitment","Quality check program listings and application materials. Schedule recruitment events. Begin preliminary planning three to six months before interviews. Review applications, issue invitations, collect evaluations, and submit rank lists."]],"recUME":[["Accreditation and curriculum","Maintain accreditation documentation and data collection instruments. Track curriculum committee review schedules for courses and clerkships. Monitor required clinical experiences and comparability across sites. Maintain minutes, agendas, and action logs."],["Admissions","Maintain application review workflows and committee training. Track interview scheduling, scoring calibration, and decision timelines. Monitor holistic review documentation and compliance with institutional policy."],["Student affairs and progression","Track academic progress, remediation, and leaves of absence. Support promotions and progress committee operations. Maintain MSPE development and release timelines. Coordinate advising, career planning, and residency application support."],["Assessment and evaluation","Administer course, clerkship, and faculty evaluations. Monitor narrative assessment quality and timeliness. Track examination schedules and score reporting. Maintain program evaluation data used for continuous quality improvement."],["Operations","Maintain rosters, scheduling, LMS content, affiliation agreements, and site onboarding. Manage compliance training, immunization and health clearance, and background checks. Coordinate orientation, ceremonies, and recognition events."]],"resources":[["Accreditation and oversight",[["ACGME","Accreditation Council for Graduate Medical Education","acgme.org"],["ADS","ACGME Accreditation Data System: annual update, faculty rosters, block diagrams, participating sites","apps.acgme.org/ads"],["Case Logs","ACGME Case Log System for procedure and case volume tracking","acgme.org"],["Milestones","Specialty milestone sets and the semiannual reporting windows","acgme.org"],["ACGME Surveys","Resident, fellow, and faculty survey administration and results","acgme.org"],["CLER","Clinical Learning Environment Review program and pathways","acgme.org"],["AOA","American Osteopathic Association; osteopathic recognition","osteopathic.org"],["TJC","The Joint Commission; accreditation of the clinical learning environment","jointcommission.org"]]],["Recruitment, matching, and applications",[["NRMP","National Resident Matching Program; Main Residency Match and fellowship matches","nrmp.org"],["ERAS","Electronic Residency Application Service for institutions; Program Director's WorkStation","aamc.org/services/eras-for-institutions"],["EFDO","ERAS Fellowships Documents Office; the designated dean's office for all fellowship applicants","erasfellowshipdocuments.org"],["SF Match","San Francisco Match; ophthalmology and selected fellowship matches","sfmatch.org"],["AUA","American Urological Association; urology residency match","auanet.org"],["FREIDA","AMA Residency and Fellowship Database; your public program listing","freida.ama-assn.org"]]],["Certification, licensure, and immigration",[["ABMS","American Board of Medical Specialties; directory of member boards","abms.org"],["NBOME","National Board of Osteopathic Medical Examiners; COMLEX-USA","nbome.org"],["USMLE","United States Medical Licensing Examination","usmle.org"],["FSMB","Federation of State Medical Boards; licensure and disciplinary data","fsmb.org"],["ECFMG","Certification of international medical graduates; a division of Intealth","ecfmg.org"],["EVSP","ECFMG Exchange Visitor Sponsorship Program; J-1 physician sponsorship and DS-2019","ecfmg.org/evsp"],["USCIS","U.S. Citizenship and Immigration Services; H-1B and related petitions","uscis.gov"]]],["Funding, data, and policy",[["CMS","Centers for Medicare and Medicaid Services; GME payment rules and cost reporting","cms.gov"],["HRSA","Health Resources and Services Administration; Teaching Health Center GME","hrsa.gov"],["MedPAC","Medicare Payment Advisory Commission; GME payment analysis and reports","medpac.gov"],["GME Track","AAMC GME Track and the National GME Census","aamc.org/data-reports/students-residents/report/gme-track"],["AAMC","Association of American Medical Colleges","aamc.org"]]],["Professional development and community",[["AHME","Association for Hospital Medical Education; institute, academy, and webinars","ahme.org"],["TAGME","Training Administrators of Graduate Medical Education; C-TAGME certification","tagme.org"],["NSAMA","National Society of Academic Medical Administrators; annual conference plus new, advanced, and institutional coordinator training","nsama.org"],["FULGME","Forum for United Leaders in Graduate Medical Education; peer-reviewed journal and community for program administrators, managers, and GME leaders","fulgme.org"],["JGME","Journal of Graduate Medical Education; open access, includes a coordinator section","acgme.org/education-and-resources/jgme"],["AAMC GRA","Group on Resident Affairs; community for GME leadership","aamc.org"],["CMSS","Council of Medical Specialty Societies; directory of specialty societies","cmss.org"],["ACGME AWARE","Well-being resources, modules, and podcasts for programs and learners","acgme.org"],["NAM","National Academy of Medicine; clinician well-being and resilience resources","nam.edu"]]],["Undergraduate medical education",[["LCME","Liaison Committee on Medical Education","lcme.org"],["COCA","Commission on Osteopathic College Accreditation","osteopathic.org"],["AACOM","American Association of Colleges of Osteopathic Medicine","aacom.org"],["MedEdPORTAL","Peer-reviewed, open-access teaching and assessment resources","mededportal.org"],["AMCAS","American Medical College Application Service","students-residents.aamc.org/amcas"],["AACOMAS","Application service for osteopathic medical schools","aacom.org"],["VSLO","Visiting Student Learning Opportunities","students-residents.aamc.org/visiting-student-learning-opportunities"],["NBME","National Board of Medical Examiners","nbme.org"]]]],"yearEnd":["What worked this year","What did not work, and what you learned","Decisions and improvements worth carrying forward","Documentation, files, and records to archive before July 1","Open items handed to someone else, with names and dates","Priorities for next academic year"]};
+const AY = "2026-2027";
+const AY_START = "2026-07-01", AY_END = "2027-06-30";
+const SCHEMA = 1;
+
+/* ---------- date helpers (no UTC conversion anywhere) ---------- */
+function todayISO(){
+  const d=new Date(); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());
+}
+function p2(n){ return String(n).padStart(2,"0"); }
+function parseISO(s){ if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+  const a=s.split("-").map(Number); return new Date(a[0],a[1]-1,a[2]); }
+function isoOf(d){ return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function addDays(s,n){ const d=parseISO(s); if(!d) return ""; d.setDate(d.getDate()+n); return isoOf(d); }
+function addMonths(s,n){ const d=parseISO(s); if(!d) return "";
+  const day=d.getDate(); d.setDate(1); d.setMonth(d.getMonth()+n);
+  const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+  d.setDate(Math.min(day,last)); return isoOf(d); }
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function fmt(s){ const d=parseISO(s); if(!d) return "";
+  return DOW[d.getDay()]+", "+MON[d.getMonth()].slice(0,3)+" "+d.getDate()+", "+d.getFullYear(); }
+function fmtShort(s){ const d=parseISO(s); if(!d) return "";
+  return MON[d.getMonth()].slice(0,3)+" "+d.getDate(); }
+function daysFromToday(s){ const d=parseISO(s); if(!d) return null;
+  const t=parseISO(todayISO()); return Math.round((d-t)/86400000); }
+function monthKey(s){ return s? s.slice(0,7) : ""; }
+function inAY(s){ return s && s>=AY_START && s<=AY_END; }
+
+/* ---------- escaping ---------- */
+function esc(v){ return String(v==null?"":v)
+  .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+function nl2br(v){ return esc(v).replace(/\n/g,"<br>"); }
+function safeHref(u){
+  const s=String(u||"").trim();
+  if(!s) return "";
+  if(/^(https?:\/\/|mailto:)/i.test(s)) return s;
+  if(/^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(s)) return "https://"+s;
+  return ""; // refuse javascript:, data:, file: and anything unrecognised
+}
+
+/* ---------- defaults ---------- */
+const ROLES = {
+  acc:{label:"Accreditation oversight", short:"Accreditation", cls:"role-acc"},
+  gi:{label:"Program management", short:"Program", cls:"role-gi"},
+  both:{label:"Both roles", short:"Both", cls:"role-both"},
+  pers:{label:"Professional development", short:"Prof dev", cls:"role-pers"}
+};
+const DEF_CATS = ["Accreditation","Administration","Evaluations","Governance and committees",
+  "Recruitment and selection","Onboarding and transitions","Didactics and curriculum",
+  "Scholarly activity","Reporting and data","Policy","Project work","Other"];
+const DEF_STATUS = [
+  {id:"todo",  label:"To do",            cls:"c-gry"},
+  {id:"doing", label:"In progress",      cls:"c-blu"},
+  {id:"wait",  label:"Waiting on someone",cls:"c-amb"},
+  {id:"block", label:"Blocked",          cls:"c-gry"},
+  {id:"done",  label:"Done",             cls:"c-grn"}
+];
+const DEF_SOURCES = ["Attached planner (AY27-28 edition)","Content outline","ACGME source to verify",
+  "Local process to confirm","Institutional calendar","Confirmed in writing","Other"];
+const PRIS = {high:{label:"High",cls:"c-red"},med:{label:"Medium",cls:"c-amb"},low:{label:"Low",cls:"c-gry"}};
+const CONCERN_KINDS = [
+  {id:"finding", label:"Official accreditation finding", cls:"c-red"},
+  {id:"afi",     label:"Area for improvement (official)", cls:"c-amb"},
+  {id:"internal",label:"Internal observation",            cls:"c-blu"},
+  {id:"note",    label:"Planning note",                   cls:"c-gry"}
+];
+
+function blankState(){
+  return {
+    schema:SCHEMA, ay:AY, seq:1,
+    settings:{ showUME:false, cats:DEF_CATS.slice(), statuses:DEF_STATUS.map(s=>({...s})),
+               sources:DEF_SOURCES.slice(), owners:[], savedAt:"" },
+    tasks:[], programs:[], concerns:[], meetings:[], projects:[], evidence:[],
+    notes:[], parking:[], contacts:[],
+    monthly:{}, annual:[{},{},{}], yearEnd:{}, seasonalDone:{}, giNotes:{}
+  };
+}
+let S = blankState();
+let VIEW = "dash";
+let ROLEVIEW = "all";
+let FILT = {q:"",role:"",cat:"",status:"",pri:"",owner:"",prog:"",from:"",to:"",showArch:false};
+let MONTHIDX = 0;
+
+/* ---------- ids ---------- */
+function uid(pref){ return (pref||"x")+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7); }
+function stamp(){ return new Date().toISOString(); }
+
+/* ============================================================
+   STORAGE (Supabase). The whole state maps to rows in
+   planner_docs (user_id, path, body). save() diffs the state
+   against what the server last confirmed and writes only the
+   rows that changed, batched, so every call site keeps working.
+   ============================================================ */
+let SUPA=null, SESSION=null;
+let DBSTATE="connecting";      // connecting | live | saving | off
+let SHADOW={};                 // path -> JSON last confirmed
+let UPSERTS={}, DELETES={};    // pending
+let flushT=null, flushing=false, dbToldFail=false;
+
+const META_PREFIX="meta/";
+function flatten(st){
+  const out={};
+  const coll=(name,arr)=>arr.forEach(x=>{ if(x&&x.id) out[name+"/"+x.id]=x; });
+  coll("tasks",st.tasks); coll("programs",st.programs); coll("concerns",st.concerns);
+  coll("meetings",st.meetings); coll("projects",st.projects); coll("evidence",st.evidence);
+  coll("notes",st.notes);
+  Object.keys(st.monthly).forEach(k=>{ out["monthly/"+k]=st.monthly[k]; });
+  out["meta/settings"]={v:st.settings};
+  out["meta/annual"]={v:st.annual};
+  out["meta/yearEnd"]={v:st.yearEnd};
+  out["meta/seasonalDone"]={v:st.seasonalDone};
+  out["meta/giNotes"]={v:st.giNotes};
+  out["meta/parking"]={v:st.parking};
+  out["meta/contacts"]={v:st.contacts};
+  return out;
+}
+function setSync(state){ DBSTATE=state;
+  const sy=document.getElementById("syncLbl"), st=document.getElementById("syncTxt");
+  if(!sy) return;
+  sy.className="sync "+(state==="live"?"live":(state==="off"?"off":""));
+  st.textContent = state==="live"?"Saved":(state==="saving"?"Saving":(state==="off"?"Not saved":"Connecting"));
+}
+function save(){
+  S.settings.savedAt = stamp();
+  if(!SUPA || !SESSION) return;
+  const docs=flatten(S);
+  for(const path in docs){
+    const json=JSON.stringify(docs[path]);
+    if(SHADOW[path]!==json){ UPSERTS[path]=json; delete DELETES[path]; }
+  }
+  for(const path in SHADOW){
+    if(!(path in docs) && !path.startsWith(META_PREFIX)){ DELETES[path]=true; delete UPSERTS[path]; }
+  }
+  if(Object.keys(UPSERTS).length||Object.keys(DELETES).length){
+    setSync("saving");
+    clearTimeout(flushT); flushT=setTimeout(flush, 350);
+  }
+}
+async function flush(){
+  if(flushing){ clearTimeout(flushT); flushT=setTimeout(flush, 400); return; }
+  if(!SUPA||!SESSION) return;
+  flushing=true;
+  const ups=UPSERTS; UPSERTS={};
+  const dels=DELETES; DELETES={};
+  try{
+    const paths=Object.keys(ups);
+    for(let i=0;i<paths.length;i+=100){
+      const chunk=paths.slice(i,i+100).map(path=>({
+        user_id:SESSION.user.id, path, body:JSON.parse(ups[path]), updated_at:new Date().toISOString()}));
+      const {error}=await SUPA.from("planner_docs").upsert(chunk,{onConflict:"user_id,path"});
+      if(error) throw error;
+      chunk.forEach(r=>{ SHADOW[r.path]=JSON.stringify(r.body); });
+    }
+    const dp=Object.keys(dels);
+    for(let i=0;i<dp.length;i+=100){
+      const chunk=dp.slice(i,i+100);
+      const {error}=await SUPA.from("planner_docs").delete()
+        .eq("user_id",SESSION.user.id).in("path",chunk);
+      if(error) throw error;
+      chunk.forEach(pp=>{ delete SHADOW[pp]; });
+    }
+    dbToldFail=false;
+    if(!Object.keys(UPSERTS).length && !Object.keys(DELETES).length) setSync("live");
+  }catch(e){
+    // put the failed work back so the next save retries it
+    for(const k in ups) if(!(k in UPSERTS)) UPSERTS[k]=ups[k];
+    for(const k in dels) if(!(k in DELETES)) DELETES[k]=true;
+    setSync("off");
+    if(!dbToldFail){ dbToldFail=true;
+      toast("A save did not go through. Check your connection; your latest changes retry automatically.", 6000); }
+    clearTimeout(flushT); flushT=setTimeout(flush, 6000);
+  }finally{
+    flushing=false;
+  }
+}
+async function loadAll(){
+  SHADOW={}; const rows=[];
+  let from=0;
+  for(;;){
+    const {data,error}=await SUPA.from("planner_docs")
+      .select("path,body").eq("user_id",SESSION.user.id).range(from,from+999);
+    if(error) throw error;
+    rows.push.apply(rows,data||[]);
+    if(!data || data.length<1000) break;
+    from+=1000;
+  }
+  const st=blankState();
+  const colls={tasks:[],programs:[],concerns:[],meetings:[],projects:[],evidence:[],notes:[]};
+  rows.forEach(r=>{
+    const path=String(r.path||""); const body=r.body||{};
+    SHADOW[path]=JSON.stringify(body);
+    const seg=path.split("/");
+    if(seg.length===2 && colls[seg[0]]){ const b=Object.assign({},body); b.id=b.id||seg[1]; colls[seg[0]].push(b); }
+    else if(seg[0]==="monthly" && seg[1]) st.monthly[seg[1]]=body;
+    else if(seg[0]==="meta" && seg[1]){
+      const v=body.v;
+      switch(seg[1]){
+        case "settings": if(v&&typeof v==="object") st.settings=Object.assign(blankState().settings, v); break;
+        case "annual": if(Array.isArray(v)) st.annual=[0,1,2].map(i=>v[i]||{}); break;
+        case "yearEnd": if(v&&typeof v==="object") st.yearEnd=v; break;
+        case "seasonalDone": if(v&&typeof v==="object") st.seasonalDone=v; break;
+        case "giNotes": if(v&&typeof v==="object") st.giNotes=v; break;
+        case "parking": if(Array.isArray(v)) st.parking=v; break;
+        case "contacts": if(Array.isArray(v)) st.contacts=v; break;
+      }
+    }
+  });
+  Object.keys(colls).forEach(k=>{ st[k]=colls[k]; });
+  seedMonthly(st);
+  S=st;
+}
+function mergeState(o){
+  const b = blankState();
+  if(!o || typeof o!=="object") return b;
+  const arrs=["tasks","programs","concerns","meetings","projects","evidence","notes","parking","contacts"];
+  arrs.forEach(k=>{ if(Array.isArray(o[k])) b[k]=JSON.parse(JSON.stringify(o[k])); });
+  ["tasks","programs","concerns","meetings","projects","evidence","notes"].forEach(k=>{
+    b[k]=b[k].filter(x=>x&&typeof x==="object"); b[k].forEach(x=>{ if(!x.id) x.id=uid(k[0]); });
+  });
+  if(o.settings && typeof o.settings==="object"){
+    b.settings.showUME = !!o.settings.showUME;
+    if(Array.isArray(o.settings.cats) && o.settings.cats.length) b.settings.cats=o.settings.cats.map(String);
+    if(Array.isArray(o.settings.sources) && o.settings.sources.length) b.settings.sources=o.settings.sources.map(String);
+    if(Array.isArray(o.settings.owners)) b.settings.owners=o.settings.owners.map(String);
+    if(Array.isArray(o.settings.statuses) && o.settings.statuses.length)
+      b.settings.statuses = o.settings.statuses.filter(s=>s&&s.id).map(s=>({id:String(s.id),label:String(s.label||s.id),cls:String(s.cls||"c-gry")}));
+  }
+  if(o.monthly && typeof o.monthly==="object") b.monthly=JSON.parse(JSON.stringify(o.monthly));
+  if(Array.isArray(o.annual)) b.annual = [0,1,2].map(i=>o.annual[i]||{});
+  if(o.yearEnd && typeof o.yearEnd==="object") b.yearEnd=JSON.parse(JSON.stringify(o.yearEnd));
+  if(o.seasonalDone && typeof o.seasonalDone==="object") b.seasonalDone=JSON.parse(JSON.stringify(o.seasonalDone));
+  if(o.giNotes && typeof o.giNotes==="object") b.giNotes=JSON.parse(JSON.stringify(o.giNotes));
+  b.seq = Number(o.seq)||1;
+  seedMonthly(b);
+  return b;
+}
+function seedMonthly(st){
+  const t = st||S;
+  SEED.months.forEach(m=>{
+    if(!t.monthly[m.key]) t.monthly[m.key]={goals:["","",""],worth:"",carry:"",notes:"",reflect:["","","","",""],keydates:[]};
+    const x=t.monthly[m.key];
+    if(!Array.isArray(x.goals)) x.goals=["","",""];
+    while(x.goals.length<3) x.goals.push("");
+    if(!Array.isArray(x.reflect)) x.reflect=["","","","",""];
+    while(x.reflect.length<5) x.reflect.push("");
+    if(!Array.isArray(x.keydates)) x.keydates=[];
+    ["worth","carry","notes"].forEach(k=>{ if(typeof x[k]!=="string") x[k]=""; });
+  });
+}
+
+/* ---------- small ui utilities ---------- */
+let toastT=null;
+function toast(msg,ms){
+  const el=document.getElementById("toast");
+  el.textContent=msg; el.hidden=false;
+  clearTimeout(toastT); toastT=setTimeout(()=>{el.hidden=true;}, ms||2600);
+}
+let lastFocus=null;
+function openModal(html){
+  lastFocus=document.activeElement;
+  const ov=document.getElementById("ov"), mod=document.getElementById("mod");
+  mod.innerHTML=html; ov.hidden=false;
+  document.body.style.overflow="hidden";
+  const f=mod.querySelector("input,select,textarea,button");
+  if(f) f.focus();
+}
+function closeModal(){
+  const ov=document.getElementById("ov");
+  ov.hidden=true; document.getElementById("mod").innerHTML="";
+  document.body.style.overflow="";
+  if(lastFocus && lastFocus.focus) lastFocus.focus();
+}
+function confirmBox(title, body, okLabel, onOk, danger){
+  openModal(`<h2 id="modTitle">${esc(title)}</h2>
+    <div class="muted" style="margin:.5rem 0 .2rem">${body}</div>
+    <div class="mf"><span class="sp"></span>
+      <button class="btn" data-x="cancel">Cancel</button>
+      <button class="btn ${danger?"dgr":"pri"}" data-x="ok">${esc(okLabel||"Confirm")}</button>
+    </div>`);
+  const mod=document.getElementById("mod");
+  mod.querySelector('[data-x="cancel"]').onclick=closeModal;
+  mod.querySelector('[data-x="ok"]').onclick=()=>{ closeModal(); onOk(); };
+}
+function opts(list, sel, blank){
+  let h = blank!=null ? `<option value="">${esc(blank)}</option>` : "";
+  list.forEach(o=>{
+    const v = typeof o==="string"? o : o.id;
+    const l = typeof o==="string"? o : o.label;
+    h += `<option value="${esc(v)}"${String(v)===String(sel)?" selected":""}>${esc(l)}</option>`;
+  });
+  return h;
+}
+function statusOf(id){ return S.settings.statuses.find(s=>s.id===id) || {id:id,label:id||"To do",cls:"c-gry"}; }
+function progName(id){ const p=S.programs.find(p=>p.id===id); return p? p.name : ""; }
+function allOwners(){
+  const set=new Set(S.settings.owners.filter(Boolean));
+  S.tasks.forEach(t=>{ if(t.owner) set.add(t.owner); });
+  S.concerns.forEach(c=>{ if(c.owner) set.add(c.owner); });
+  S.projects.forEach(p=>{ if(p.owner) set.add(p.owner); });
+  return Array.from(set).sort((a,b)=>a.localeCompare(b));
+}
+
+/* ---------- task derived state ---------- */
+function isDone(t){ return t.status==="done"; }
+function isOverdue(t){ return !isDone(t) && t.due && daysFromToday(t.due)<0; }
+function isSoon(t,n){ if(isDone(t)||!t.due) return false; const d=daysFromToday(t.due); return d>=0 && d<=(n||30); }
+function isBlockedNow(t){
+  if(t.status==="block") return true;
+  if(t.dependsOn){ const d=S.tasks.find(x=>x.id===t.dependsOn); if(d && !isDone(d)) return true; }
+  return false;
+}
+function roleMatch(t){
+  if(ROLEVIEW==="all") return true;
+  return t.role===ROLEVIEW || t.role==="both";
+}
+function visibleTasks(){
+  return S.tasks.filter(t=> (FILT.showArch? true : !t.archived) && roleMatch(t));
+}
+function applyFilters(list){
+  const q=FILT.q.trim().toLowerCase();
+  return list.filter(t=>{
+    if(FILT.role && t.role!==FILT.role) return false;
+    if(FILT.cat && t.cat!==FILT.cat) return false;
+    if(FILT.status){
+      if(FILT.status==="__overdue"){ if(!isOverdue(t)) return false; }
+      else if(FILT.status==="__open"){ if(isDone(t)) return false; }
+      else if(FILT.status==="__blocked"){ if(!isBlockedNow(t)) return false; }
+      else if(t.status!==FILT.status) return false;
+    }
+    if(FILT.pri && t.pri!==FILT.pri) return false;
+    if(FILT.owner && t.owner!==FILT.owner) return false;
+    if(FILT.prog && t.program!==FILT.prog) return false;
+    if(FILT.from && (!t.due || t.due<FILT.from)) return false;
+    if(FILT.to && (!t.due || t.due>FILT.to)) return false;
+    if(q){
+      const hay=(t.title+" "+(t.notes||"")+" "+(t.owner||"")+" "+(t.cat||"")+" "+(t.source||"")+" "+progName(t.program)).toLowerCase();
+      if(hay.indexOf(q)<0) return false;
+    }
+    return true;
+  });
+}
+function sortTasks(list){
+  const pri={high:0,med:1,low:2};
+  return list.slice().sort((a,b)=>{
+    if(isDone(a)!==isDone(b)) return isDone(a)?1:-1;
+    const ad=a.due||"9999-99-99", bd=b.due||"9999-99-99";
+    if(ad!==bd) return ad<bd?-1:1;
+    const ap=pri[a.pri]==null?1:pri[a.pri], bp=pri[b.pri]==null?1:pri[b.pri];
+    if(ap!==bp) return ap-bp;
+    return (a.title||"").localeCompare(b.title||"");
+  });
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   TASKS: create, edit, duplicate, complete, reopen, archive,
+   delete, recurrence, and the shared task-row renderer.
+   ============================================================ */
+
+function newTask(patch){
+  const t = {
+    id: uid("t"), title:"", role:"acc", program:"", cat:"Accreditation", area:"",
+    status:"todo", pri:"med", due:"", owner:"", source:"Local process to confirm",
+    confirmed:false, notes:"", link:"", dependsOn:"", seriesId:"", rrule:null,
+    evidenceId:"", archived:false, completedAt:"",
+    created: stamp(), updated: stamp()
+  };
+  return Object.assign(t, patch||{});
+}
+function addTask(patch){ const t=newTask(patch); S.tasks.push(t); save(); return t; }
+function getTask(id){ return S.tasks.find(t=>t.id===id); }
+function touch(t){ t.updated=stamp(); }
+
+function toggleDone(id){
+  const t=getTask(id); if(!t) return;
+  if(isDone(t)){ t.status="todo"; t.completedAt=""; }
+  else { t.status="done"; t.completedAt=todayISO(); }
+  touch(t); save(); render();
+}
+function archiveTask(id,on){ const t=getTask(id); if(!t) return; t.archived=!!on; touch(t); save(); render(); }
+function dupTask(id){
+  const t=getTask(id); if(!t) return;
+  const c=newTask({...t, id:uid("t"), title:t.title+" (copy)", status:"todo", completedAt:"",
+                   seriesId:"", rrule:null, created:stamp(), updated:stamp(), archived:false});
+  S.tasks.push(c); save(); render(); toast("Duplicated.");
+}
+function delTask(id){
+  const t=getTask(id); if(!t) return;
+  confirmBox("Delete this item?",
+    `<p><strong>${esc(t.title)}</strong></p>
+     <p>This cannot be undone. Everything else stays as it is. If you want a safety copy first,
+     close this and use <em>Data and backup &rsaquo; Export backup</em>.</p>`,
+    "Delete", ()=>{ S.tasks=S.tasks.filter(x=>x.id!==id); save(); render(); toast("Deleted."); }, true);
+}
+
+/* ---------- recurrence ----------
+   A rule creates independent instances. Editing one instance never
+   touches the others. The rule text stays visible on every instance. */
+const FREQS=[{id:"weekly",label:"Every week"},{id:"biweekly",label:"Every 2 weeks"},
+  {id:"monthly",label:"Every month"},{id:"quarterly",label:"Every 3 months"},
+  {id:"semiannual",label:"Every 6 months"},{id:"annual",label:"Every year"}];
+function ruleText(r){
+  if(!r||!r.freq) return "";
+  const f=FREQS.find(x=>x.id===r.freq);
+  return (f?f.label:r.freq)+", "+r.count+" occurrence"+(r.count===1?"":"s");
+}
+function nextDue(iso, freq){
+  switch(freq){
+    case "weekly": return addDays(iso,7);
+    case "biweekly": return addDays(iso,14);
+    case "monthly": return addMonths(iso,1);
+    case "quarterly": return addMonths(iso,3);
+    case "semiannual": return addMonths(iso,6);
+    case "annual": return addMonths(iso,12);
+    default: return "";
+  }
+}
+function buildSeries(base, rule){
+  const sid=uid("s"); const made=[];
+  let due=base.due;
+  const n=Math.max(1,Math.min(36,Number(rule.count)||1));
+  for(let i=0;i<n;i++){
+    if(i>0){ due=nextDue(due, rule.freq); if(!due) break; }
+    made.push(newTask({...base, id:uid("t"), due:due, seriesId:sid,
+      rrule:{freq:rule.freq,count:n,index:i+1}, created:stamp(), updated:stamp()}));
+  }
+  return made;
+}
+
+/* ---------- task editor ---------- */
+function taskModal(id, preset){
+  const t = id? getTask(id) : newTask(preset||{});
+  const editing=!!id;
+  const st=S.settings;
+  openModal(`
+   <h2 id="modTitle">${editing?"Edit item":"New item"}</h2>
+   <p class="tiny">${editing?("Last updated "+esc(new Date(t.updated).toLocaleString())):"Nothing is saved until you press Save."}</p>
+   <div class="fld"><label for="f_title">Title</label>
+     <input type="text" id="f_title" value="${esc(t.title)}" maxlength="240"></div>
+   <div class="row c3">
+     <div class="fld"><label for="f_role">Role</label><select id="f_role">
+       ${opts(Object.keys(ROLES).map(k=>({id:k,label:ROLES[k].label})), t.role)}</select></div>
+     <div class="fld"><label for="f_cat">Category</label><select id="f_cat">${opts(st.cats, t.cat)}</select></div>
+     <div class="fld"><label for="f_prog">Program</label><select id="f_prog">
+       ${opts(S.programs.filter(p=>!p.archived).map(p=>({id:p.id,label:p.name})), t.program, "Not program specific")}</select></div>
+   </div>
+   <div class="row c3">
+     <div class="fld"><label for="f_status">Status</label><select id="f_status">${opts(st.statuses, t.status)}</select></div>
+     <div class="fld"><label for="f_pri">Priority</label><select id="f_pri">
+       ${opts(Object.keys(PRIS).map(k=>({id:k,label:PRIS[k].label})), t.pri)}</select></div>
+     <div class="fld"><label for="f_due">Due date</label><input type="date" id="f_due" value="${esc(t.due)}"></div>
+   </div>
+   <div class="row c2">
+     <div class="fld"><label for="f_owner">Owner</label>
+       <input type="text" id="f_owner" list="ownerList" value="${esc(t.owner)}" maxlength="120" placeholder="Who is accountable">
+       <datalist id="ownerList">${allOwners().map(o=>`<option value="${esc(o)}"></option>`).join("")}</datalist></div>
+     <div class="fld"><label for="f_dep">Blocked until this is done</label><select id="f_dep">
+       ${opts(S.tasks.filter(x=>x.id!==t.id&&!x.archived).map(x=>({id:x.id,label:x.title.slice(0,70)})), t.dependsOn, "Nothing")}</select></div>
+   </div>
+   <div class="fld"><label for="f_area">Program workstream (optional)</label>
+     <select id="f_area">${opts(GI_AREAS.map(a=>({id:a.id,label:a.label})), t.area, "Not tied to a workstream")}</select></div>
+   <div class="row c2">
+     <div class="fld"><label for="f_src">Source or authority for this date</label>
+       <select id="f_src">${opts(st.sources, t.source)}</select></div>
+     <div class="fld" style="display:flex;align-items:flex-end;padding-bottom:.35rem">
+       <label style="display:flex;align-items:center;gap:.45rem;font-weight:600;margin:0">
+         <input type="checkbox" id="f_conf" ${t.confirmed?"checked":""} style="width:auto;accent-color:var(--pur)">
+         Date confirmed against the published source</label></div>
+   </div>
+   <div class="fld"><label for="f_notes">Notes</label><textarea id="f_notes" maxlength="4000">${esc(t.notes)}</textarea></div>
+   <div class="fld"><label for="f_link">Link or file reference</label>
+     <input type="text" id="f_link" value="${esc(t.link)}" maxlength="500" placeholder="https://... or a path such as GME Shared\\Accreditation\\..."></div>
+   ${editing? (t.rrule? `<div class="note"><strong>Part of a recurring series.</strong> ${esc(ruleText(t.rrule))}.
+       This is occurrence ${esc(t.rrule.index||1)}. Editing it does not change the others.</div>`:"")
+     : `<details class="acc"><summary>Make this recurring</summary><div>
+        <div class="row c2">
+          <div class="fld"><label for="f_freq">Repeat</label><select id="f_freq">${opts(FREQS,"","Do not repeat")}</select></div>
+          <div class="fld"><label for="f_cnt">How many occurrences</label>
+            <input type="text" id="f_cnt" value="12" inputmode="numeric" maxlength="2"></div>
+        </div>
+        <p class="tiny">Each occurrence is created as its own item, so you can move or edit one
+        without disturbing the rest. Needs a due date. Maximum 36.</p></div></details>`}
+   <div class="mf">
+     ${editing?`<button class="btn dgr" data-x="del">Delete</button>
+       <button class="btn" data-x="arch">${t.archived?"Unarchive":"Archive"}</button>`:""}
+     <span class="sp"></span>
+     <button class="btn" data-x="cancel">Cancel</button>
+     <button class="btn pri" data-x="save">Save</button>
+   </div>`);
+
+  const m=document.getElementById("mod");
+  const g=id2=>m.querySelector("#"+id2);
+  m.querySelector('[data-x="cancel"]').onclick=closeModal;
+  if(editing){
+    m.querySelector('[data-x="del"]').onclick=()=>{ closeModal(); delTask(t.id); };
+    m.querySelector('[data-x="arch"]').onclick=()=>{ closeModal(); archiveTask(t.id,!t.archived);
+      toast(t.archived?"Unarchived.":"Archived."); };
+  }
+  m.querySelector('[data-x="save"]').onclick=()=>{
+    const title=g("f_title").value.trim();
+    if(!title){ toast("Give the item a title."); g("f_title").focus(); return; }
+    const patch={ title, role:g("f_role").value, cat:g("f_cat").value, program:g("f_prog").value,
+      status:g("f_status").value, pri:g("f_pri").value, due:g("f_due").value,
+      owner:g("f_owner").value.trim(), dependsOn:g("f_dep").value, source:g("f_src").value, area:g("f_area").value,
+      confirmed:g("f_conf").checked, notes:g("f_notes").value, link:g("f_link").value.trim() };
+    if(patch.status==="done" ) patch.completedAt = t.completedAt || todayISO();
+    else patch.completedAt="";
+    if(editing){
+      const cur=getTask(t.id)||t;
+      Object.assign(cur, patch); touch(cur);
+      if(S.tasks.indexOf(cur)<0) S.tasks.push(cur);
+      save(); closeModal(); render(); toast("Saved.");
+    } else {
+      const freq = g("f_freq") ? g("f_freq").value : "";
+      if(freq){
+        if(!patch.due){ toast("A recurring item needs a due date."); return; }
+        const cnt=Math.max(1,Math.min(36, parseInt(g("f_cnt").value,10)||1));
+        const made=buildSeries(newTask({...t,...patch}), {freq,count:cnt});
+        made.forEach(x=>S.tasks.push(x));
+        save(); closeModal(); render(); toast(made.length+" occurrences created.");
+      } else {
+        S.tasks.push(newTask({...t,...patch})); save(); closeModal(); render(); toast("Added.");
+      }
+    }
+  };
+}
+
+/* ---------- the shared task row ---------- */
+function taskRow(t, showProg){
+  const od=isOverdue(t), soon=isSoon(t,14), blk=isBlockedNow(t), done=isDone(t);
+  const st=statusOf(t.status);
+  const dueChip = t.due
+    ? `<span class="chip ${od?"c-red":(soon?"c-amb":"c-gry")} ${t.confirmed?"":"tent"}" title="${t.confirmed?"Confirmed date":"Tentative, confirm against the published source"}">${esc(fmtShort(t.due))}${t.confirmed?"":" · confirm"}</span>`
+    : `<span class="chip c-gry tent">no date</span>`;
+  return `<div class="item ${done?"done":(od?"od":(blk?"blk":(soon?"soon":"")))}">
+    <input class="cb" type="checkbox" ${done?"checked":""} data-done="${esc(t.id)}"
+      aria-label="Mark ${esc(t.title)} ${done?"not done":"done"}">
+    <div class="bd">
+      <div class="t">${esc(t.title)}</div>
+      <div class="meta">
+        <span class="chip ${ROLES[t.role]?ROLES[t.role].cls:"role-both"}">${esc(ROLES[t.role]?ROLES[t.role].short:t.role)}</span>
+        ${dueChip}
+        <span class="chip ${esc(st.cls)}">${esc(st.label)}</span>
+        ${t.pri&&PRIS[t.pri]&&t.pri!=="med"?`<span class="chip ${PRIS[t.pri].cls}">${PRIS[t.pri].label}</span>`:""}
+        ${t.owner?`<span class="chip c-gry">${esc(t.owner)}</span>`:""}
+        ${showProg&&t.program?`<span class="chip c-pur">${esc(progName(t.program))}</span>`:""}
+        ${blk&&t.status!=="block"?`<span class="chip c-gry">waiting on a dependency</span>`:""}
+        ${t.rrule?`<span class="chip c-pur" title="${esc(ruleText(t.rrule))}">repeats</span>`:""}
+        ${t.archived?`<span class="chip c-gry">archived</span>`:""}
+      </div>
+      ${t.notes?`<div class="tiny" style="margin-top:.28rem">${nl2br(t.notes.slice(0,220))}${t.notes.length>220?"&hellip;":""}</div>`:""}
+      ${safeHref(t.link)?`<div class="tiny" style="margin-top:.2rem"><a href="${esc(safeHref(t.link))}" target="_blank" rel="noopener noreferrer">Open link</a></div>`
+        :(t.link?`<div class="tiny" style="margin-top:.2rem">Reference: ${esc(t.link)}</div>`:"")}
+      <div class="tiny" style="margin-top:.2rem">${esc(t.cat)} &middot; source: ${esc(t.source||"not stated")} &middot; updated ${esc(new Date(t.updated).toLocaleDateString())}</div>
+    </div>
+    <div class="acts noprint">
+      <button class="btn sm" data-edit="${esc(t.id)}">Edit</button>
+      <button class="btn sm" data-dup="${esc(t.id)}">Duplicate</button>
+    </div>
+  </div>`;
+}
+function taskList(list, showProg, emptyMsg){
+  if(!list.length) return `<div class="empty">${esc(emptyMsg||"Nothing here yet.")}</div>`;
+  return list.map(t=>taskRow(t,showProg)).join("");
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   VIEWS A: dashboard, year overview, month page, calendar, task list
+   ============================================================ */
+
+function vDash(){
+  const all = visibleTasks();
+  const open = all.filter(t=>!isDone(t));
+  const overdue = sortTasks(open.filter(isOverdue));
+  const next30 = sortTasks(open.filter(t=>isSoon(t,30)));
+  const waiting = sortTasks(open.filter(t=>t.status==="wait"));
+  const blocked = sortTasks(open.filter(t=>isBlockedNow(t) && t.status!=="wait"));
+  const meets = S.meetings.filter(m=>m.date && m.date>=todayISO()).sort((a,b)=>a.date<b.date?-1:1).slice(0,6);
+  const projs = S.projects.filter(p=>!p.archived && p.pri==="high" && (ROLEVIEW==="all"||p.role===ROLEVIEW||p.role==="both"));
+  const recent = S.tasks.filter(t=>!t.archived).slice().sort((a,b)=>a.updated<b.updated?1:-1).slice(0,6);
+  const unconf = open.filter(t=>t.due && !t.confirmed).length;
+
+  return `
+  <div class="kpis">
+    ${kpi("r",overdue.length,"Overdue","__overdue")}
+    ${kpi("a",next30.length,"Due in 30 days","")}
+    ${kpi("b",waiting.length,"Waiting on someone","wait")}
+    ${kpi("",blocked.length,"Blocked","__blocked")}
+    ${kpi("p",open.length,"Open items","__open")}
+    ${kpi("",unconf,"Dates to confirm","")}
+  </div>
+
+  ${unconf? `<div class="warn"><strong>${unconf} item${unconf===1?"":"s"} carry a date that has not been confirmed.</strong>
+    Tentative dates show with a dashed outline and the word <em>confirm</em>. Marking an item complete records
+    that you did the work. It does not by itself evidence accreditation compliance.</div>`:""}
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="hd"><h2>Overdue</h2><span class="sp"></span>
+        <button class="btn sm" data-go="tasks" data-preset="__overdue">See all</button></div>
+      ${taskList(overdue.slice(0,8), true, "Nothing overdue. ")}
+    </div>
+    <div class="card">
+      <div class="hd"><h2>Next 30 days</h2><span class="sp"></span>
+        <button class="btn sm" data-go="cal">Calendar</button></div>
+      ${taskList(next30.slice(0,8), true, "Nothing due in the next 30 days.")}
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="hd"><h2>Waiting on someone else</h2></div>
+      ${taskList(waiting.slice(0,6), true, "Nothing is sitting with anyone else.")}
+    </div>
+    <div class="card">
+      <div class="hd"><h2>Blocked</h2></div>
+      ${taskList(blocked.slice(0,6), true, "Nothing is blocked.")}
+    </div>
+  </div>
+
+  <div class="grid g3">
+    <div class="card">
+      <div class="hd"><h3>Upcoming meetings</h3><span class="sp"></span>
+        <button class="btn sm" data-go="meetings">Open</button></div>
+      ${meets.length? meets.map(m=>`<div class="item"><div class="bd">
+        <div class="t">${esc(m.name)}</div>
+        <div class="meta"><span class="chip c-pur">${esc(fmtShort(m.date))}</span>
+        ${m.kind?`<span class="chip c-gry">${esc(m.kind)}</span>`:""}
+        ${(m.decisions||[]).length?`<span class="chip c-blu">${(m.decisions||[]).length} decision(s)</span>`:""}</div>
+      </div></div>`).join("") : `<div class="empty">No meetings scheduled yet.</div>`}
+    </div>
+    <div class="card">
+      <div class="hd"><h3>Priority projects</h3><span class="sp"></span>
+        <button class="btn sm" data-go="projects">Open</button></div>
+      ${projs.length? projs.slice(0,6).map(p=>`<div class="item"><div class="bd">
+        <div class="t">${esc(p.name)}</div>
+        <div class="meta"><span class="chip ${ROLES[p.role]?ROLES[p.role].cls:"role-both"}">${esc(ROLES[p.role]?ROLES[p.role].short:"")}</span>
+        ${p.due?`<span class="chip c-gry">${esc(fmtShort(p.due))}</span>`:""}
+        ${p.status?`<span class="chip c-blu">${esc(p.status)}</span>`:""}</div>
+      </div></div>`).join("") : `<div class="empty">No high priority projects.</div>`}
+    </div>
+    <div class="card">
+      <div class="hd"><h3>Recently updated</h3></div>
+      ${recent.length? recent.map(t=>`<div class="item"><div class="bd">
+        <div class="t">${esc(t.title)}</div>
+        <div class="tiny">${esc(new Date(t.updated).toLocaleString())}</div></div>
+        <div class="acts noprint"><button class="btn sm" data-edit="${esc(t.id)}">Edit</button></div></div>`).join("")
+        : `<div class="empty">Nothing yet. Add your first item from any page.</div>`}
+    </div>
+  </div>`;
+}
+function kpi(cls,n,label,preset){
+  return `<button class="kpi ${cls}" data-go="tasks" data-preset="${esc(preset||"")}">
+    <div class="n">${n}</div><div class="l">${esc(label)}</div></button>`;
+}
+
+/* ---------- year overview ---------- */
+function vYear(){
+  const rows = SEED.months.map((m,i)=>{
+    const due = visibleTasks().filter(t=>monthKey(t.due)===m.key);
+    const openN = due.filter(t=>!isDone(t)).length;
+    const mm = S.monthly[m.key]||{};
+    const goals=(mm.goals||[]).filter(Boolean).length;
+    return `<tr>
+      <td><button class="btn sm" data-month="${i}">${esc(m.label)}</button></td>
+      <td>${esc(m.focus)}</td>
+      <td>${esc(m.theme)}</td>
+      <td>${due.length} item${due.length===1?"":"s"}${openN?` <span class="chip c-amb">${openN} open</span>`:""}</td>
+      <td>${goals}/3</td></tr>`;
+  }).join("");
+
+  return `
+  <div class="note"><strong>Academic year 1 July 2026 to 30 June 2027.</strong>
+  Weeks run Monday to Sunday and are numbered 1 to 52, each assigned to the month containing its Thursday.
+  AY 2026-2027 has 52 weeks. The AY 2027-2028 planner this content came from had 53. That is a real
+  difference between the two years, not a transcription error.</div>
+
+  <div class="card"><div class="hd"><h2>Annual priorities</h2><span class="sp"></span>
+    <span class="tiny">Set in July. Revisit in December and April.</span></div>
+    <div class="grid g3">${[0,1,2].map(i=>{
+      const a=S.annual[i]||{};
+      return `<div>
+        <h4 style="color:var(--pur);margin-bottom:.35rem">Priority ${i+1}</h4>
+        <div class="fld"><label for="ap_w${i}">What it is</label>
+          <textarea id="ap_w${i}" data-annual="${i}:what" style="min-height:3.4rem">${esc(a.what||"")}</textarea></div>
+        <div class="fld"><label for="ap_s${i}">How you will know it worked</label>
+          <textarea id="ap_s${i}" data-annual="${i}:success" style="min-height:3.4rem">${esc(a.success||"")}</textarea></div>
+        <div class="row c2">
+          <div class="fld"><label for="ap_o${i}">Owner</label>
+            <input type="text" id="ap_o${i}" data-annual="${i}:owner" value="${esc(a.owner||"")}"></div>
+          <div class="fld"><label for="ap_t${i}">Target date</label>
+            <input type="date" id="ap_t${i}" data-annual="${i}:target" value="${esc(a.target||"")}"></div>
+        </div></div>`;}).join("")}
+    </div>
+  </div>
+
+  <div class="card"><div class="hd"><h2>The twelve months</h2></div>
+    <div class="tw"><table><thead><tr><th>Month</th><th>Focus areas</th><th>Theme</th><th>Dated items</th><th>Goals set</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>
+  </div>
+
+  <div class="card"><div class="hd"><h2>Year-end review</h2><span class="sp"></span>
+    <span class="tiny">Complete in June. This becomes next July's starting point.</span></div>
+    ${SEED.yearEnd.map((lbl,i)=>`<div class="fld"><label for="ye${i}">${esc(lbl)}</label>
+      <textarea id="ye${i}" data-yearend="${esc(lbl)}">${esc(S.yearEnd[lbl]||"")}</textarea></div>`).join("")}
+  </div>`;
+}
+
+/* ---------- month page ---------- */
+function vMonth(){
+  const m = SEED.months[MONTHIDX];
+  const mm = S.monthly[m.key];
+  const tasks = sortTasks(applyFilters(visibleTasks().filter(t=>monthKey(t.due)===m.key)));
+  const weeks = SEED.weeks.filter(w=>w.month===m.key);
+  const today = todayISO();
+
+  const glanceBlock=(title,arr,track)=>`
+    <div class="card"><div class="hd"><h3>${esc(title)}</h3></div>
+    <ul class="glist">${arr.map((txt,i)=>{
+      const k=m.key+"|"+track+"|"+i;
+      return `<li>
+        <input type="checkbox" ${S.seasonalDone[k]?"checked":""} data-seas="${esc(k)}"
+          aria-label="Checked: ${esc(txt.slice(0,60))}" style="width:auto;margin-top:.2rem;accent-color:var(--pur)">
+        <span>${esc(txt)}</span>
+        <button class="btn sm gadd noprint" data-seasadd="${esc(m.key)}|${esc(track)}|${i}"
+          title="Turn this into a dated item">+ item</button></li>`;}).join("")}
+    </ul>
+    <p class="tiny" style="margin-top:.5rem">Source: your AY 2027-2028 planner, seasonal rhythm only.
+    No dates were carried across. Confirm every deadline against the current published schedule
+    and your own institutional calendar.</p></div>`;
+
+  return `
+  <div class="bar noprint">
+    <button class="btn" data-mstep="-1" ${MONTHIDX===0?"disabled":""}>&larr; Previous</button>
+    <div class="fld"><label for="mSel">Month</label><select id="mSel">
+      ${SEED.months.map((x,i)=>`<option value="${i}"${i===MONTHIDX?" selected":""}>${esc(x.label)}</option>`).join("")}
+    </select></div>
+    <button class="btn" data-mstep="1" ${MONTHIDX===11?"disabled":""}>Next &rarr;</button>
+    <span class="sp" style="flex:1"></span>
+    <button class="btn" onclick="window.print()">Print this month</button>
+    <button class="btn pri" data-newtask="month">Add item</button>
+  </div>
+
+  <div class="card"><div class="hd"><h2>${esc(m.label)}</h2>
+    <span class="chip c-pur">${esc(m.focus)}</span>
+    <span class="chip c-gry">Theme: ${esc(m.theme)}</span></div>
+
+    <div class="row c3">
+      ${[0,1,2].map(i=>`<div class="fld"><label for="g${i}">Goal ${i+1}</label>
+        <input type="text" id="g${i}" data-mfield="goals:${i}" value="${esc(mm.goals[i]||"")}"></div>`).join("")}
+    </div>
+  </div>
+
+  <div class="glance">
+    ${glanceBlock("Graduate medical education", m.gme, "gme")}
+    ${S.settings.showUME? glanceBlock("Undergraduate medical education", m.ume, "ume") : ""}
+    ${glanceBlock("Shared across both", m.shared, "shared")}
+    <div class="card"><div class="hd"><h3>Looking ahead to next month</h3></div>
+      <ul class="glist">${m.ahead.map(x=>`<li><span>${esc(x)}</span></li>`).join("")}</ul></div>
+  </div>
+
+  <div class="card"><div class="hd"><h2>Dated items this month</h2><span class="sp"></span>
+    <span class="tiny">${tasks.length} item${tasks.length===1?"":"s"}</span></div>
+    ${taskList(tasks, true, "Nothing dated in "+m.label+" yet. Use Add item, or the + buttons above.")}
+  </div>
+
+  <div class="card"><div class="hd"><h2>Weeks</h2></div>
+    <div class="weeks">${weeks.map(w=>{
+      const wt=visibleTasks().filter(t=>t.due>=w.start&&t.due<=w.end);
+      const now = today>=w.start && today<=w.end;
+      return `<div class="wk ${now?"now":""}">
+        <div class="wh">Week ${w.n}${now?" &middot; this week":""}</div>
+        <div class="wd">${esc(fmtShort(w.start))} &ndash; ${esc(fmtShort(w.end))}, ${esc(w.end.slice(0,4))}</div>
+        ${wt.length? wt.map(t=>`<div class="wl">${isDone(t)?"&#10003;":"&middot;"} ${esc(t.title.slice(0,54))}</div>`).join("")
+          : `<div class="wl tiny">&mdash;</div>`}</div>`;}).join("")}
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card"><div class="hd"><h3>Worth documenting</h3></div>
+      <p class="tiny">Wins, decisions, and evidence to keep.</p>
+      <textarea data-mfield="worth" aria-label="Worth documenting">${esc(mm.worth)}</textarea></div>
+    <div class="card"><div class="hd"><h3>Carry forward</h3></div>
+      <textarea data-mfield="carry" aria-label="Carry forward">${esc(mm.carry)}</textarea></div>
+  </div>
+
+  <div class="card"><div class="hd"><h3>Notes and reminders</h3></div>
+    <textarea data-mfield="notes" style="min-height:6rem" aria-label="Notes and reminders">${esc(mm.notes)}</textarea></div>
+
+  <div class="card"><div class="hd"><h3>Reflection: ${esc(m.reflect)}</h3></div>
+    ${m.prompts.map((q,i)=>`<div class="fld"><label for="rf${i}">${p2(i+1)} &nbsp; ${esc(q)}</label>
+      <textarea id="rf${i}" data-mfield="reflect:${i}" style="min-height:3.6rem">${esc(mm.reflect[i]||"")}</textarea></div>`).join("")}
+  </div>`;
+}
+
+/* ---------- calendar ---------- */
+function vCal(){
+  const m=SEED.months[MONTHIDX];
+  const grid=SEED.grids.find(g=>g.key===m.key);
+  const today=todayISO();
+  const byDay={};
+  applyFilters(visibleTasks()).forEach(t=>{ if(t.due){ (byDay[t.due]=byDay[t.due]||[]).push(t); }});
+  const meetByDay={};
+  S.meetings.forEach(mt=>{ if(mt.date){ (meetByDay[mt.date]=meetByDay[mt.date]||[]).push(mt); }});
+
+  const rows=grid.rows.map(r=>`<tr>${r.map(d=>{
+    const out = d.slice(0,7)!==m.key;
+    const items=byDay[d]||[]; const mts=meetByDay[d]||[];
+    return `<td class="${out?"out":""} ${d===today?"today":""}">
+      <span class="dn">${Number(d.slice(8,10))}</span>
+      ${mts.map(x=>`<span class="ev" style="background:#E8F1F7;color:#1A5578">${esc(x.name.slice(0,26))}</span>`).join("")}
+      ${items.slice(0,4).map(t=>`<button class="ev ${isDone(t)?"dn2":(isOverdue(t)?"od":"")}" data-edit="${esc(t.id)}"
+        title="${esc(t.title)}">${esc(t.title.slice(0,26))}</button>`).join("")}
+      ${items.length>4?`<span class="tiny">+${items.length-4} more</span>`:""}</td>`;}).join("")}</tr>`).join("");
+
+  return `
+  <div class="bar noprint">
+    <button class="btn" data-mstep="-1" ${MONTHIDX===0?"disabled":""}>&larr;</button>
+    <div class="fld"><label for="mSel">Month</label><select id="mSel">
+      ${SEED.months.map((x,i)=>`<option value="${i}"${i===MONTHIDX?" selected":""}>${esc(x.label)}</option>`).join("")}</select></div>
+    <button class="btn" data-mstep="1" ${MONTHIDX===11?"disabled":""}>&rarr;</button>
+    <span style="flex:1"></span>
+    <button class="btn" onclick="window.print()">Print</button>
+    <button class="btn pri" data-newtask="month">Add item</button>
+  </div>
+  ${filterBar(true)}
+  <div class="card"><div class="hd"><h2>${esc(m.label)}</h2></div>
+    <div class="tw"><table class="cal"><thead><tr>
+      <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    <p class="tiny" style="margin-top:.5rem">Blue blocks are meetings. Click any item to edit it.
+    Dates are stored as plain calendar dates, so they never shift with time zones.</p>
+  </div>`;
+}
+
+/* ---------- task list ---------- */
+function vTasks(){
+  const list=sortTasks(applyFilters(visibleTasks()));
+  const done=list.filter(isDone), open=list.filter(t=>!isDone(t));
+  return `
+  <div class="bar noprint">
+    <button class="btn pri" data-newtask="plain">Add item</button>
+    <span style="flex:1"></span>
+    <button class="btn" data-exportcsv="1">Export these as CSV</button>
+    <button class="btn" onclick="window.print()">Print</button>
+  </div>
+  ${filterBar(false)}
+  <div class="card"><div class="hd"><h2>Open</h2><span class="sp"></span>
+    <span class="tiny">${open.length} shown</span></div>
+    ${taskList(open, true, "No open items match these filters.")}</div>
+  <div class="card"><div class="hd"><h2>Completed</h2><span class="sp"></span>
+    <span class="tiny">${done.length} shown</span></div>
+    ${taskList(done.slice(0,60), true, "Nothing completed yet.")}</div>`;
+}
+
+function filterBar(compact){
+  const st=S.settings;
+  return `<div class="card noprint" style="padding:.7rem .85rem">
+   <div class="bar" style="margin:0">
+    <div class="fld grow"><label for="fq">Search</label>
+      <input type="text" id="fq" value="${esc(FILT.q)}" placeholder="title, notes, owner, program"></div>
+    <div class="fld"><label for="frole">Role</label><select id="frole">
+      ${opts(Object.keys(ROLES).map(k=>({id:k,label:ROLES[k].label})), FILT.role, "Any role")}</select></div>
+    <div class="fld"><label for="fstatus">Status</label><select id="fstatus">
+      <option value="">Any status</option>
+      <option value="__open"${FILT.status==="__open"?" selected":""}>Open only</option>
+      <option value="__overdue"${FILT.status==="__overdue"?" selected":""}>Overdue</option>
+      <option value="__blocked"${FILT.status==="__blocked"?" selected":""}>Blocked</option>
+      ${opts(st.statuses, FILT.status)}</select></div>
+    <div class="fld"><label for="fcat">Category</label><select id="fcat">${opts(st.cats, FILT.cat, "Any category")}</select></div>
+    ${compact?"":`
+    <div class="fld"><label for="fpri">Priority</label><select id="fpri">
+      ${opts(Object.keys(PRIS).map(k=>({id:k,label:PRIS[k].label})), FILT.pri, "Any priority")}</select></div>
+    <div class="fld"><label for="fowner">Owner</label><select id="fowner">${opts(allOwners(), FILT.owner, "Any owner")}</select></div>
+    <div class="fld"><label for="fprog">Program</label><select id="fprog">
+      ${opts(S.programs.map(p=>({id:p.id,label:p.name})), FILT.prog, "Any program")}</select></div>
+    <div class="fld"><label for="ffrom">Due from</label><input type="date" id="ffrom" value="${esc(FILT.from)}"></div>
+    <div class="fld"><label for="fto">Due to</label><input type="date" id="fto" value="${esc(FILT.to)}"></div>
+    <div class="fld" style="padding-bottom:.35rem"><label style="display:flex;align-items:center;gap:.35rem;margin:0">
+      <input type="checkbox" id="farch" ${FILT.showArch?"checked":""} style="width:auto;accent-color:var(--pur)">
+      Show archived</label></div>`}
+    <button class="btn" data-clearfilt="1">Clear</button>
+   </div></div>`;
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   VIEWS B: accreditation oversight, programs, concerns and
+   action plans, and the program management workspace.
+   ============================================================ */
+
+/* A starting structure for running one program, drawn from the
+   recurring-work headings in the FULGME Academic Year Planner. It is
+   not a claim about how any institution organises the work. */
+const GI_AREAS = [
+  {id:"recruit",  label:"Recruitment and selection"},
+  {id:"onboard",  label:"Onboarding"},
+  {id:"sched",    label:"Trainee schedules and rotations"},
+  {id:"evals",    label:"Evaluations"},
+  {id:"ccc",      label:"CCC preparation"},
+  {id:"pec",      label:"PEC preparation"},
+  {id:"ape",      label:"Annual Program Evaluation"},
+  {id:"faculty",  label:"Faculty coordination"},
+  {id:"didactic", label:"Didactics"},
+  {id:"scholar",  label:"Scholarly activity"},
+  {id:"support",  label:"Trainee support and well-being"},
+  {id:"accfollow",label:"Accreditation follow-up"},
+  {id:"transit",  label:"Annual transitions"}
+];
+const ACC_STATUSES = ["Not recorded","Continued Accreditation","Continued Accreditation with Warning",
+  "Initial Accreditation","Initial Accreditation with Warning","Probationary Accreditation",
+  "Accreditation Withheld","Withdrawn","Other, see notes"];
+
+/* ---------- programs ---------- */
+function newProgram(){
+  return {id:uid("p"), name:"", specialty:"", level:"subspecialty", pd:"", coord:"",
+    accStatus:"Not recorded", statusSource:"Local process to confirm", priorities:"",
+    nextReview:"", followUp:"", evidence:"", notes:"", archived:false,
+    created:stamp(), updated:stamp()};
+}
+function programModal(id){
+  const p = id? S.programs.find(x=>x.id===id) : newProgram();
+  const editing=!!id;
+  openModal(`
+   <h2 id="modTitle">${editing?"Edit program":"Add program"}</h2>
+   <p class="tiny">Planning fields. None of these is a claim that ACGME requires the data element.</p>
+   <div class="row c2">
+     <div class="fld"><label for="p_name">Program name</label><input type="text" id="p_name" value="${esc(p.name)}" maxlength="160"></div>
+     <div class="fld"><label for="p_spec">Specialty or subspecialty</label><input type="text" id="p_spec" value="${esc(p.specialty)}" maxlength="120"></div>
+   </div>
+   <div class="row c3">
+     <div class="fld"><label for="p_lvl">Level</label><select id="p_lvl">
+       ${opts([{id:"specialty",label:"Specialty (residency)"},{id:"subspecialty",label:"Subspecialty (fellowship)"},{id:"other",label:"Other"}], p.level)}</select></div>
+     <div class="fld"><label for="p_pd">Program Director</label><input type="text" id="p_pd" value="${esc(p.pd)}" maxlength="120"></div>
+     <div class="fld"><label for="p_co">Coordinator or administrator</label><input type="text" id="p_co" value="${esc(p.coord)}" maxlength="120"></div>
+   </div>
+   <div class="row c2">
+     <div class="fld"><label for="p_st">Accreditation status</label><select id="p_st">${opts(ACC_STATUSES, p.accStatus)}</select></div>
+     <div class="fld"><label for="p_ss">Where that status came from</label><select id="p_ss">${opts(S.settings.sources, p.statusSource)}</select></div>
+   </div>
+   <div class="fld"><label for="p_pr">Current priorities</label><textarea id="p_pr" style="min-height:3.4rem">${esc(p.priorities)}</textarea></div>
+   <div class="row c2">
+     <div class="fld"><label for="p_nr">Next review date</label><input type="date" id="p_nr" value="${esc(p.nextReview)}"></div>
+     <div class="fld"><label for="p_fu">Assigned follow-up</label><input type="text" id="p_fu" value="${esc(p.followUp)}" maxlength="200"></div>
+   </div>
+   <div class="fld"><label for="p_ev">Evidence location or link</label><input type="text" id="p_ev" value="${esc(p.evidence)}" maxlength="500"></div>
+   <div class="fld"><label for="p_no">Notes</label><textarea id="p_no">${esc(p.notes)}</textarea></div>
+   <div class="mf">
+     ${editing?`<button class="btn dgr" data-x="del">Delete</button>
+       <button class="btn" data-x="arch">${p.archived?"Unarchive":"Archive"}</button>`:""}
+     <span class="sp"></span><button class="btn" data-x="cancel">Cancel</button>
+     <button class="btn pri" data-x="save">Save</button></div>`);
+  const m=document.getElementById("mod"), g=i=>m.querySelector("#"+i);
+  m.querySelector('[data-x="cancel"]').onclick=closeModal;
+  if(editing){
+    m.querySelector('[data-x="arch"]').onclick=()=>{ p.archived=!p.archived; p.updated=stamp(); save(); closeModal(); render(); };
+    m.querySelector('[data-x="del"]').onclick=()=>{
+      closeModal();
+      const nT=S.tasks.filter(t=>t.program===p.id).length, nC=S.concerns.filter(c=>c.programId===p.id).length;
+      confirmBox("Delete this program?",
+        `<p><strong>${esc(p.name)}</strong></p><p>${nT} task${nT===1?"":"s"} and ${nC} concern record${nC===1?"":"s"}
+         are linked to it. They will be kept but will no longer show a program. Consider Archive instead.</p>`,
+        "Delete program", ()=>{ S.programs=S.programs.filter(x=>x.id!==p.id);
+          S.tasks.forEach(t=>{ if(t.program===p.id) t.program=""; });
+          S.concerns.forEach(c=>{ if(c.programId===p.id) c.programId=""; });
+          save(); render(); toast("Program deleted."); }, true);
+    };
+  }
+  m.querySelector('[data-x="save"]').onclick=()=>{
+    const nm=g("p_name").value.trim();
+    if(!nm){ toast("Give the program a name."); g("p_name").focus(); return; }
+    Object.assign(p,{name:nm, specialty:g("p_spec").value.trim(), level:g("p_lvl").value,
+      pd:g("p_pd").value.trim(), coord:g("p_co").value.trim(), accStatus:g("p_st").value,
+      statusSource:g("p_ss").value, priorities:g("p_pr").value, nextReview:g("p_nr").value,
+      followUp:g("p_fu").value.trim(), evidence:g("p_ev").value.trim(), notes:g("p_no").value,
+      updated:stamp()});
+    if(!editing) S.programs.push(p);
+    save(); closeModal(); render(); toast("Saved.");
+  };
+}
+
+/* ---------- concerns and action plans ---------- */
+function newConcern(){
+  return {id:uid("c"), programId:"", kind:"internal", issue:"", source:"", owner:"", action:"",
+    target:"", progress:"", evidence:"", nextCheck:"", closure:"", open:true,
+    created:stamp(), updated:stamp()};
+}
+function concernModal(id, presetProg){
+  const c = id? S.concerns.find(x=>x.id===id) : newConcern();
+  if(!id && presetProg) c.programId=presetProg;
+  const editing=!!id;
+  openModal(`
+   <h2 id="modTitle">${editing?"Edit record":"New concern or action plan"}</h2>
+   <div class="warn" style="margin:.6rem 0"><strong>Classify this correctly.</strong>
+   An official accreditation finding comes from the accrediting body in writing. An internal
+   observation is yours. The two are not interchangeable in a review.</div>
+   <div class="row c2">
+     <div class="fld"><label for="c_prog">Program</label><select id="c_prog">
+       ${opts(S.programs.map(p=>({id:p.id,label:p.name})), c.programId, "Not program specific")}</select></div>
+     <div class="fld"><label for="c_kind">Type of record</label><select id="c_kind">${opts(CONCERN_KINDS, c.kind)}</select></div>
+   </div>
+   <div class="fld"><label for="c_issue">The issue</label><textarea id="c_issue" style="min-height:3.6rem">${esc(c.issue)}</textarea></div>
+   <div class="row c2">
+     <div class="fld"><label for="c_src">Source (letter, meeting, survey, observation)</label>
+       <input type="text" id="c_src" value="${esc(c.source)}" maxlength="240"></div>
+     <div class="fld"><label for="c_own">Owner</label><input type="text" id="c_own" value="${esc(c.owner)}" maxlength="120"></div>
+   </div>
+   <div class="fld"><label for="c_act">Action</label><textarea id="c_act" style="min-height:3.6rem">${esc(c.action)}</textarea></div>
+   <div class="row c2">
+     <div class="fld"><label for="c_tgt">Target date</label><input type="date" id="c_tgt" value="${esc(c.target)}"></div>
+     <div class="fld"><label for="c_chk">Next check-in</label><input type="date" id="c_chk" value="${esc(c.nextCheck)}"></div>
+   </div>
+   <div class="fld"><label for="c_prg">Progress update</label><textarea id="c_prg">${esc(c.progress)}</textarea></div>
+   <div class="fld"><label for="c_ev">Evidence</label><input type="text" id="c_ev" value="${esc(c.evidence)}" maxlength="500"></div>
+   <div class="fld"><label for="c_cls">Closure rationale</label><textarea id="c_cls" style="min-height:3.2rem">${esc(c.closure)}</textarea></div>
+   <div class="fld"><label style="display:flex;align-items:center;gap:.45rem;margin:0">
+     <input type="checkbox" id="c_open" ${c.open?"checked":""} style="width:auto;accent-color:var(--pur)"> Still open</label></div>
+   <div class="mf">${editing?`<button class="btn dgr" data-x="del">Delete</button>`:""}
+     <span class="sp"></span>
+     <button class="btn" data-x="mktask">Save and create a follow-up item</button>
+     <button class="btn" data-x="cancel">Cancel</button>
+     <button class="btn pri" data-x="save">Save</button></div>`);
+  const m=document.getElementById("mod"), g=i=>m.querySelector("#"+i);
+  m.querySelector('[data-x="cancel"]').onclick=closeModal;
+  if(editing) m.querySelector('[data-x="del"]').onclick=()=>{ closeModal();
+    confirmBox("Delete this record?", "<p>This cannot be undone.</p>", "Delete",
+      ()=>{ S.concerns=S.concerns.filter(x=>x.id!==c.id); save(); render(); toast("Deleted."); }, true); };
+  const collect=()=>{
+    Object.assign(c,{programId:g("c_prog").value, kind:g("c_kind").value, issue:g("c_issue").value,
+      source:g("c_src").value.trim(), owner:g("c_own").value.trim(), action:g("c_act").value,
+      target:g("c_tgt").value, nextCheck:g("c_chk").value, progress:g("c_prg").value,
+      evidence:g("c_ev").value.trim(), closure:g("c_cls").value, open:g("c_open").checked, updated:stamp()});
+    if(!c.issue.trim()){ toast("Describe the issue."); return false; }
+    if(!editing && !S.concerns.includes(c)) S.concerns.push(c);
+    return true;
+  };
+  m.querySelector('[data-x="save"]').onclick=()=>{ if(collect()){ save(); closeModal(); render(); toast("Saved."); } };
+  m.querySelector('[data-x="mktask"]').onclick=()=>{
+    if(!collect()) return;
+    save(); closeModal();
+    taskModal(null,{title:(c.action||c.issue).slice(0,120), role:"acc", program:c.programId,
+      cat:"Accreditation", owner:c.owner, due:c.nextCheck||c.target,
+      source:c.kind==="finding"||c.kind==="afi"?"Confirmed in writing":"Local process to confirm",
+      notes:"Follows from the record: "+c.issue.slice(0,300)});
+  };
+}
+function concernRow(c){
+  const k=CONCERN_KINDS.find(x=>x.id===c.kind)||CONCERN_KINDS[3];
+  const od = c.target && c.open && daysFromToday(c.target)<0;
+  return `<div class="item ${c.open?(od?"od":""):"done"}">
+    <div class="bd">
+      <div class="t">${esc(c.issue.slice(0,160))}${c.issue.length>160?"&hellip;":""}</div>
+      <div class="meta">
+        <span class="chip ${esc(k.cls)}">${esc(k.label)}</span>
+        ${c.programId?`<span class="chip c-pur">${esc(progName(c.programId))}</span>`:""}
+        ${c.owner?`<span class="chip c-gry">${esc(c.owner)}</span>`:""}
+        ${c.target?`<span class="chip ${od?"c-red":"c-gry"}">target ${esc(fmtShort(c.target))}</span>`:""}
+        ${c.nextCheck?`<span class="chip c-blu">check-in ${esc(fmtShort(c.nextCheck))}</span>`:""}
+        <span class="chip ${c.open?"c-amb":"c-grn"}">${c.open?"open":"closed"}</span>
+      </div>
+      ${c.action?`<div class="tiny" style="margin-top:.25rem"><strong>Action:</strong> ${nl2br(c.action.slice(0,220))}</div>`:""}
+      ${c.source?`<div class="tiny">Source: ${esc(c.source)}</div>`:""}
+    </div>
+    <div class="acts noprint"><button class="btn sm" data-econ="${esc(c.id)}">Edit</button></div></div>`;
+}
+
+/* ---------- accreditation workspace ---------- */
+function vAccred(){
+  const progs=S.programs.filter(p=>FILT.showArch||!p.archived);
+  const open=S.concerns.filter(c=>c.open), closed=S.concerns.filter(c=>!c.open);
+  const accTasks=sortTasks(applyFilters(S.tasks.filter(t=>!t.archived && (t.role==="acc"||t.role==="both"))));
+
+  const rows = progs.map(p=>{
+    const t=S.tasks.filter(x=>x.program===p.id && !x.archived && !isDone(x)).length;
+    const cs=S.concerns.filter(x=>x.programId===p.id && x.open).length;
+    const nr=p.nextReview? `<span class="chip ${daysFromToday(p.nextReview)<0?"c-red":"c-gry"} tent">${esc(fmtShort(p.nextReview))}</span>`:"&mdash;";
+    return `<tr>
+      <td><strong>${esc(p.name)}</strong>${p.archived?' <span class="chip c-gry">archived</span>':""}
+        <div class="tiny">${esc(p.specialty)}${p.specialty&&p.level?" &middot; ":""}${esc(p.level==="specialty"?"Specialty":p.level==="subspecialty"?"Subspecialty":"Other")}</div></td>
+      <td>${esc(p.pd)||"&mdash;"}<div class="tiny">${esc(p.coord)}</div></td>
+      <td><span class="chip c-gry tent">${esc(p.accStatus)}</span>
+        <div class="tiny">source: ${esc(p.statusSource)}</div></td>
+      <td>${esc((p.priorities||"").slice(0,90))}${(p.priorities||"").length>90?"&hellip;":""}</td>
+      <td>${nr}</td>
+      <td>${t} open${cs?` &middot; <span class="chip c-amb">${cs} concern${cs===1?"":"s"}</span>`:""}</td>
+      <td class="noprint"><button class="btn sm" data-eprog="${esc(p.id)}">Edit</button>
+        <button class="btn sm" data-newcon="${esc(p.id)}">+ concern</button></td></tr>`;}).join("");
+
+  return `
+  <div class="note"><strong>Accreditation oversight across the programs you work with.</strong>
+  Nothing is prefilled. Add programs as you go; they do not have to be alike, and no field here asserts
+  an ACGME requirement. Completing an item records that work was done, not that a requirement is met.</div>
+
+  <div class="bar noprint">
+    <button class="btn pri" data-newprog="1">Add program</button>
+    <button class="btn" data-newcon="">Add concern or action plan</button>
+    <button class="btn" data-newtask="acc">Add accreditation item</button>
+    <span style="flex:1"></span>
+    <label style="display:flex;align-items:center;gap:.35rem;font-weight:600;font-size:.8rem">
+      <input type="checkbox" id="farch2" ${FILT.showArch?"checked":""} style="width:auto;accent-color:var(--pur)"> Show archived</label>
+    <button class="btn" onclick="window.print()">Print</button>
+  </div>
+
+  <div class="card"><div class="hd"><h2>Programs</h2><span class="sp"></span>
+    <span class="tiny">${progs.length} listed</span></div>
+    ${progs.length? `<div class="tw"><table><thead><tr>
+      <th>Program</th><th>PD / coordinator</th><th>Accreditation status</th><th>Current priorities</th>
+      <th>Next review</th><th>Workload</th><th class="noprint"></th></tr></thead><tbody>${rows}</tbody></table></div>`
+      : `<div class="empty">No programs yet. Add the pediatric specialty and subspecialty programs you oversee.</div>`}
+  </div>
+
+  <div class="card"><div class="hd"><h2>Open concerns and action plans</h2><span class="sp"></span>
+    <span class="tiny">${open.length} open</span></div>
+    ${open.length? open.map(concernRow).join("") : `<div class="empty">Nothing open.</div>`}
+  </div>
+
+  ${closed.length? `<details class="acc"><summary>Closed records (${closed.length})</summary>
+    <div>${closed.map(concernRow).join("")}</div></details>`:""}
+
+  <div class="card"><div class="hd"><h2>Accreditation items</h2><span class="sp"></span>
+    <span class="tiny">${accTasks.length} shown</span></div>
+    ${taskList(accTasks.slice(0,80), true, "No accreditation items yet.")}
+  </div>`;
+}
+
+/* ---------- fellowship workspace ---------- */
+function vGI(){
+  const mine=S.tasks.filter(t=>!t.archived && (t.role==="gi"||t.role==="both"));
+  const openN=mine.filter(t=>!isDone(t)).length;
+  const od=mine.filter(isOverdue).length;
+
+  const areaCard=a=>{
+    const list=sortTasks(mine.filter(t=>t.area===a.id));
+    const o=list.filter(t=>!isDone(t)).length;
+    return `<details class="acc" ${o?"open":""}>
+      <summary>${esc(a.label)} <span class="chip ${o?"c-amb":"c-gry"}" style="margin-left:.4rem">${o} open</span>
+        <span class="chip c-gry">${list.length} total</span></summary>
+      <div>
+        <div class="bar" style="margin:.3rem 0 .6rem">
+          <button class="btn sm pri noprint" data-giadd="${esc(a.id)}">Add item to this workstream</button></div>
+        ${taskList(list, false, "Nothing here yet.")}
+        <div class="fld" style="margin-top:.5rem"><label for="ga_${esc(a.id)}">Working notes for this workstream</label>
+          <textarea id="ga_${esc(a.id)}" data-ginote="${esc(a.id)}" style="min-height:3.2rem">${esc((S.giNotes&&S.giNotes[a.id])||"")}</textarea></div>
+      </div></details>`;
+  };
+
+  return `
+  <div class="note"><strong>Program management.</strong> The day-to-day running of your own program:
+  recruitment, onboarding, schedules, evaluations, CCC and PEC preparation, and the rest. The
+  workstreams are a starting structure drawn from the FULGME planner. Nothing is prefilled, and
+  confidential trainee or faculty performance information should stay in your institution's own
+  systems, not here.</div>
+
+  <div class="kpis">
+    ${kpi("p",openN,"Open program items","")}
+    ${kpi("r",od,"Overdue","__overdue")}
+    ${kpi("",mine.filter(isDone).length,"Completed","")}
+    ${kpi("b",mine.filter(t=>t.status==="wait").length,"Waiting on someone","wait")}
+  </div>
+
+  <div class="bar noprint">
+    <button class="btn pri" data-newtask="gi">Add program item</button>
+    <span style="flex:1"></span>
+    <button class="btn" onclick="window.print()">Print</button>
+  </div>
+
+  ${GI_AREAS.map(areaCard).join("")}
+
+  <div class="card"><div class="hd"><h2>Everything, by date</h2></div>
+    ${taskList(sortTasks(mine).slice(0,80), false, "No program items yet.")}</div>`;
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   VIEWS C: recurring work and resources, meetings and decisions,
+   projects, evidence, notes and parking lot, guide, data.
+   ============================================================ */
+
+function vRecurring(){
+  const rec = sortTasks(visibleTasks().filter(t=>t.rrule));
+  const block=(title, arr, track)=>`<div class="card"><div class="hd"><h3>${esc(title)}</h3></div>
+    ${arr.map(([h,b])=>`<details class="acc"><summary>${esc(h)}</summary><div>
+      <p style="margin-top:.4rem">${esc(b)}</p>
+      <button class="btn sm noprint" data-recadd="${esc(track)}|${esc(h)}">Create an item from this</button>
+      </div></details>`).join("")}
+    <p class="tiny">Source: your planner's recurring-work pages. These describe ongoing work that does not
+    belong to a single month. No dates are attached because the source attaches none.</p></div>`;
+
+  return `
+  <div class="note"><strong>Ongoing work and reference.</strong> Everything on this page is carried from
+  your planner. Web addresses and organisation names were current when that planner was prepared.
+  Verify against each organisation's own current publication before acting on any date, requirement,
+  or submission window.</div>
+
+  <div class="card"><div class="hd"><h2>Your recurring items</h2><span class="sp"></span>
+    <button class="btn sm pri noprint" data-newtask="plain">Add recurring item</button></div>
+    ${taskList(rec.slice(0,60), true, "No recurring items yet. Create one with Add item, then open “Make this recurring”.")}
+  </div>
+
+  ${block("Graduate medical education", SEED.recGME, "gme")}
+  ${S.settings.showUME? block("Undergraduate medical education", SEED.recUME, "ume") : ""}
+
+  <div class="card"><div class="hd"><h2>Key resources</h2></div>
+    ${SEED.resources.map(([sec,items])=>`<details class="acc"><summary>${esc(sec)}</summary><div>
+      <div class="tw"><table><tbody>${items.map(([abbr,desc,url])=>`<tr>
+        <td style="width:9rem"><strong>${esc(abbr)}</strong></td>
+        <td>${esc(desc)}<div class="tiny"><a href="https://${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(url)}</a></div></td>
+      </tr>`).join("")}</tbody></table></div></div></details>`).join("")}
+  </div>
+
+  <div class="card"><div class="hd"><h2>Key contacts</h2><span class="sp"></span>
+    <button class="btn sm noprint" data-addcontact="1">Add contact</button></div>
+    ${S.contacts.length? `<div class="tw"><table><thead><tr><th>Name</th><th>Role</th><th>Email or extension</th><th class="noprint"></th></tr></thead>
+      <tbody>${S.contacts.map((c,i)=>`<tr><td>${esc(c.name)}</td><td>${esc(c.role)}</td><td>${esc(c.contact)}</td>
+      <td class="noprint"><button class="btn sm dgr" data-delcontact="${i}">Remove</button></td></tr>`).join("")}</tbody></table></div>`
+      : `<div class="empty">No contacts yet.</div>`}
+    <p class="tiny">Kept in this browser only. Do not store anything here you would not want on this device.</p>
+  </div>`;
+}
+
+/* ---------- meetings ---------- */
+function newMeeting(){ return {id:uid("m"), name:"", kind:"", date:"", attendees:"", agenda:"",
+  decisions:[], notes:"", created:stamp(), updated:stamp()}; }
+function meetingModal(id){
+  const m0 = id? S.meetings.find(x=>x.id===id) : newMeeting();
+  const editing=!!id;
+  openModal(`
+   <h2 id="modTitle">${editing?"Edit meeting":"New meeting"}</h2>
+   <div class="row c3">
+     <div class="fld"><label for="m_name">Meeting</label><input type="text" id="m_name" value="${esc(m0.name)}" maxlength="160"></div>
+     <div class="fld"><label for="m_kind">Type</label><input type="text" id="m_kind" value="${esc(m0.kind)}" maxlength="80" placeholder="e.g. GMEC, PEC, CCC, 1:1"></div>
+     <div class="fld"><label for="m_date">Date</label><input type="date" id="m_date" value="${esc(m0.date)}"></div>
+   </div>
+   <div class="fld"><label for="m_att">Attendees</label><input type="text" id="m_att" value="${esc(m0.attendees)}" maxlength="400"></div>
+   <div class="fld"><label for="m_ag">Agenda</label><textarea id="m_ag">${esc(m0.agenda)}</textarea></div>
+   <div class="fld"><label for="m_no">Notes</label><textarea id="m_no">${esc(m0.notes)}</textarea></div>
+   <div class="mf">${editing?`<button class="btn dgr" data-x="del">Delete</button>`:""}
+     <span class="sp"></span><button class="btn" data-x="cancel">Cancel</button>
+     <button class="btn pri" data-x="save">Save</button></div>`);
+  const m=document.getElementById("mod"), g=i=>m.querySelector("#"+i);
+  m.querySelector('[data-x="cancel"]').onclick=closeModal;
+  if(editing) m.querySelector('[data-x="del"]').onclick=()=>{ closeModal();
+    confirmBox("Delete this meeting?","<p>Decisions recorded on it are deleted too. Follow-up items already created stay.</p>",
+      "Delete",()=>{ S.meetings=S.meetings.filter(x=>x.id!==m0.id); save(); render(); toast("Deleted."); },true); };
+  m.querySelector('[data-x="save"]').onclick=()=>{
+    const nm=g("m_name").value.trim();
+    if(!nm){ toast("Give the meeting a name."); return; }
+    Object.assign(m0,{name:nm,kind:g("m_kind").value.trim(),date:g("m_date").value,
+      attendees:g("m_att").value.trim(),agenda:g("m_ag").value,notes:g("m_no").value,updated:stamp()});
+    if(!editing) S.meetings.push(m0);
+    save(); closeModal(); render(); toast("Saved.");
+  };
+}
+function decisionModal(meetId, idx){
+  const mt=S.meetings.find(x=>x.id===meetId); if(!mt) return;
+  const d = idx!=null? mt.decisions[idx] : {text:"",rationale:"",owner:"",due:"",taskId:""};
+  openModal(`
+   <h2 id="modTitle">${idx!=null?"Edit decision":"Record a decision"}</h2>
+   <p class="tiny">${esc(mt.name)}${mt.date?" · "+esc(fmt(mt.date)):""}</p>
+   <div class="fld"><label for="d_t">Decision</label><textarea id="d_t" style="min-height:3.4rem">${esc(d.text)}</textarea></div>
+   <div class="fld"><label for="d_r">Rationale</label><textarea id="d_r" style="min-height:3.4rem">${esc(d.rationale)}</textarea></div>
+   <div class="row c2">
+     <div class="fld"><label for="d_o">Owner of the follow-up</label><input type="text" id="d_o" value="${esc(d.owner)}" maxlength="120"></div>
+     <div class="fld"><label for="d_d">Follow-up due</label><input type="date" id="d_d" value="${esc(d.due)}"></div>
+   </div>
+   ${d.taskId? `<div class="note">A follow-up item already exists for this decision.</div>`:""}
+   <div class="mf">${idx!=null?`<button class="btn dgr" data-x="del">Delete</button>`:""}
+     <span class="sp"></span>
+     <button class="btn" data-x="cancel">Cancel</button>
+     ${d.taskId?"":`<button class="btn" data-x="savetask">Save and create follow-up item</button>`}
+     <button class="btn pri" data-x="save">Save</button></div>`);
+  const m=document.getElementById("mod"), g=i=>m.querySelector("#"+i);
+  m.querySelector('[data-x="cancel"]').onclick=closeModal;
+  if(idx!=null) m.querySelector('[data-x="del"]').onclick=()=>{
+    mt.decisions.splice(idx,1); mt.updated=stamp(); save(); closeModal(); render(); toast("Removed."); };
+  const collect=()=>{
+    const txt=g("d_t").value.trim();
+    if(!txt){ toast("Write the decision."); return null; }
+    const obj={text:txt, rationale:g("d_r").value, owner:g("d_o").value.trim(), due:g("d_d").value, taskId:d.taskId||""};
+    if(idx!=null) mt.decisions[idx]=obj; else { mt.decisions=mt.decisions||[]; mt.decisions.push(obj); }
+    mt.updated=stamp();
+    return obj;
+  };
+  m.querySelector('[data-x="save"]').onclick=()=>{ if(collect()){ save(); closeModal(); render(); toast("Decision recorded."); } };
+  const bt=m.querySelector('[data-x="savetask"]');
+  if(bt) bt.onclick=()=>{
+    const obj=collect(); if(!obj) return;
+    const t=addTask({title:obj.text.slice(0,140), role:"acc", cat:"Governance and committees",
+      owner:obj.owner, due:obj.due, source:"Local process to confirm",
+      notes:"From "+mt.name+(mt.date?" on "+fmt(mt.date):"")+".\nRationale: "+(obj.rationale||"not recorded")});
+    obj.taskId=t.id; save(); closeModal(); render(); toast("Decision and follow-up item created.");
+  };
+}
+function vMeetings(){
+  const up=S.meetings.filter(m=>!m.date||m.date>=todayISO()).sort((a,b)=>(a.date||"9")<(b.date||"9")?-1:1);
+  const past=S.meetings.filter(m=>m.date&&m.date<todayISO()).sort((a,b)=>a.date<b.date?1:-1);
+  const card=m=>`<div class="card"><div class="hd">
+      <h3>${esc(m.name)}</h3>
+      ${m.date?`<span class="chip c-pur">${esc(fmt(m.date))}</span>`:`<span class="chip c-gry tent">no date</span>`}
+      ${m.kind?`<span class="chip c-gry">${esc(m.kind)}</span>`:""}
+      <span class="sp"></span>
+      <button class="btn sm noprint" data-emeet="${esc(m.id)}">Edit</button>
+      <button class="btn sm pri noprint" data-adddec="${esc(m.id)}">Record decision</button></div>
+    ${m.attendees?`<p class="tiny"><strong>Attendees:</strong> ${esc(m.attendees)}</p>`:""}
+    ${m.agenda?`<details class="acc"><summary>Agenda</summary><div><p>${nl2br(m.agenda)}</p></div></details>`:""}
+    ${(m.decisions||[]).length? `<h4 style="margin:.6rem 0 .35rem">Decisions</h4>`+
+      m.decisions.map((d,i)=>`<div class="item"><div class="bd">
+        <div class="t">${esc(d.text)}</div>
+        ${d.rationale?`<div class="tiny" style="margin-top:.2rem"><strong>Rationale:</strong> ${nl2br(d.rationale)}</div>`:""}
+        <div class="meta">${d.owner?`<span class="chip c-gry">${esc(d.owner)}</span>`:""}
+          ${d.due?`<span class="chip c-blu">due ${esc(fmtShort(d.due))}</span>`:""}
+          ${d.taskId?`<span class="chip c-grn">follow-up item created</span>`:`<span class="chip c-amb tent">no follow-up item</span>`}</div>
+        </div><div class="acts noprint"><button class="btn sm" data-edec="${esc(m.id)}|${i}">Edit</button></div></div>`).join("")
+      : `<p class="tiny">No decisions recorded.</p>`}
+    ${m.notes?`<details class="acc"><summary>Notes</summary><div><p>${nl2br(m.notes)}</p></div></details>`:""}
+    <div class="tiny">Updated ${esc(new Date(m.updated).toLocaleString())}</div></div>`;
+
+  return `
+  <div class="note"><strong>Governance, decisions, and follow-up.</strong> Record the decision, the reason
+  for it, who owns the follow-up, and by when. A decision without a documented rationale and owner is
+  the gap a reviewer notices first.</div>
+  <div class="bar noprint"><button class="btn pri" data-newmeet="1">Add meeting</button>
+    <span style="flex:1"></span><button class="btn" onclick="window.print()">Print</button></div>
+  <h2 style="margin-bottom:.6rem">Upcoming and undated</h2>
+  ${up.length? up.map(card).join("") : `<div class="empty">Nothing scheduled.</div>`}
+  <h2 style="margin:1.2rem 0 .6rem">Past</h2>
+  ${past.length? past.slice(0,25).map(card).join("") : `<div class="empty">No past meetings recorded.</div>`}`;
+}
+
+/* ---------- projects ---------- */
+function newProject(){ return {id:uid("pr"), name:"", role:"acc", status:"Planned", pri:"med",
+  owner:"", due:"", aim:"", milestones:"", notes:"", archived:false, created:stamp(), updated:stamp()}; }
+const PROJ_STATUS=["Planned","Active","On hold","Complete","Cancelled"];
+function projectModal(id){
+  const p = id? S.projects.find(x=>x.id===id) : newProject();
+  const editing=!!id;
+  openModal(`
+   <h2 id="modTitle">${editing?"Edit project":"New project"}</h2>
+   <div class="fld"><label for="pr_n">Project</label><input type="text" id="pr_n" value="${esc(p.name)}" maxlength="180"></div>
+   <div class="row c3">
+     <div class="fld"><label for="pr_r">Role</label><select id="pr_r">
+       ${opts(Object.keys(ROLES).map(k=>({id:k,label:ROLES[k].label})), p.role)}</select></div>
+     <div class="fld"><label for="pr_s">Status</label><select id="pr_s">${opts(PROJ_STATUS, p.status)}</select></div>
+     <div class="fld"><label for="pr_p">Priority</label><select id="pr_p">
+       ${opts(Object.keys(PRIS).map(k=>({id:k,label:PRIS[k].label})), p.pri)}</select></div>
+   </div>
+   <div class="row c2">
+     <div class="fld"><label for="pr_o">Owner</label><input type="text" id="pr_o" value="${esc(p.owner)}" maxlength="120"></div>
+     <div class="fld"><label for="pr_d">Target date</label><input type="date" id="pr_d" value="${esc(p.due)}"></div>
+   </div>
+   <div class="fld"><label for="pr_a">Aim, and how you will know it worked</label><textarea id="pr_a">${esc(p.aim)}</textarea></div>
+   <div class="fld"><label for="pr_m">Milestones (one per line)</label><textarea id="pr_m">${esc(p.milestones)}</textarea></div>
+   <div class="fld"><label for="pr_no">Notes</label><textarea id="pr_no">${esc(p.notes)}</textarea></div>
+   <div class="mf">${editing?`<button class="btn dgr" data-x="del">Delete</button>
+     <button class="btn" data-x="arch">${p.archived?"Unarchive":"Archive"}</button>`:""}
+     <span class="sp"></span><button class="btn" data-x="cancel">Cancel</button>
+     <button class="btn pri" data-x="save">Save</button></div>`);
+  const m=document.getElementById("mod"), g=i=>m.querySelector("#"+i);
+  m.querySelector('[data-x="cancel"]').onclick=closeModal;
+  if(editing){
+    m.querySelector('[data-x="arch"]').onclick=()=>{ p.archived=!p.archived; p.updated=stamp(); save(); closeModal(); render(); };
+    m.querySelector('[data-x="del"]').onclick=()=>{ closeModal();
+      confirmBox("Delete this project?","<p>This cannot be undone.</p>","Delete",
+        ()=>{ S.projects=S.projects.filter(x=>x.id!==p.id); save(); render(); toast("Deleted."); },true); };
+  }
+  m.querySelector('[data-x="save"]').onclick=()=>{
+    const nm=g("pr_n").value.trim(); if(!nm){ toast("Give the project a name."); return; }
+    Object.assign(p,{name:nm, role:g("pr_r").value, status:g("pr_s").value, pri:g("pr_p").value,
+      owner:g("pr_o").value.trim(), due:g("pr_d").value, aim:g("pr_a").value,
+      milestones:g("pr_m").value, notes:g("pr_no").value, updated:stamp()});
+    if(!editing) S.projects.push(p);
+    save(); closeModal(); render(); toast("Saved.");
+  };
+}
+function vProjects(){
+  const list=S.projects.filter(p=>(FILT.showArch||!p.archived) && (ROLEVIEW==="all"||p.role===ROLEVIEW||p.role==="both"));
+  const byStatus=PROJ_STATUS.map(st=>({st, items:list.filter(p=>p.status===st)}));
+  return `
+  <div class="note"><strong>Projects and improvement work.</strong> Anything with an aim, an owner, and
+  a target date that is bigger than a single task.</div>
+  <div class="bar noprint"><button class="btn pri" data-newproj="1">Add project</button>
+    <span style="flex:1"></span><button class="btn" onclick="window.print()">Print</button></div>
+  ${byStatus.map(g=>g.items.length? `<div class="card"><div class="hd"><h3>${esc(g.st)}</h3>
+      <span class="sp"></span><span class="tiny">${g.items.length}</span></div>
+    ${g.items.map(p=>`<div class="item ${p.archived?"done":""}"><div class="bd">
+      <div class="t">${esc(p.name)}</div>
+      <div class="meta">
+        <span class="chip ${ROLES[p.role]?ROLES[p.role].cls:"role-both"}">${esc(ROLES[p.role]?ROLES[p.role].short:"")}</span>
+        ${p.pri&&PRIS[p.pri]?`<span class="chip ${PRIS[p.pri].cls}">${PRIS[p.pri].label}</span>`:""}
+        ${p.owner?`<span class="chip c-gry">${esc(p.owner)}</span>`:""}
+        ${p.due?`<span class="chip ${daysFromToday(p.due)<0&&p.status!=="Complete"?"c-red":"c-gry"}">${esc(fmtShort(p.due))}</span>`:""}
+        ${p.archived?`<span class="chip c-gry">archived</span>`:""}</div>
+      ${p.aim?`<div class="tiny" style="margin-top:.25rem">${nl2br(p.aim.slice(0,240))}</div>`:""}
+      ${p.milestones?`<ul class="glist" style="margin-top:.3rem">${p.milestones.split("\n").filter(Boolean).slice(0,8)
+        .map(x=>`<li><span>&middot; ${esc(x)}</span></li>`).join("")}</ul>`:""}
+      </div><div class="acts noprint"><button class="btn sm" data-eproj="${esc(p.id)}">Edit</button></div></div>`).join("")}
+    </div>`:"").join("") || `<div class="empty">No projects yet.</div>`}`;
+}
+
+/* ---------- evidence ---------- */
+function newEvidence(){ return {id:uid("e"), name:"", kind:"", location:"", programId:"", owner:"",
+  retention:"", verified:"", notes:"", created:stamp(), updated:stamp()}; }
+function evidenceModal(id){
+  const e = id? S.evidence.find(x=>x.id===id) : newEvidence();
+  const editing=!!id;
+  openModal(`
+   <h2 id="modTitle">${editing?"Edit record":"Add document or evidence"}</h2>
+   <p class="tiny">This tracks where a document lives. It does not store the document.</p>
+   <div class="row c2">
+     <div class="fld"><label for="e_n">Document or evidence</label><input type="text" id="e_n" value="${esc(e.name)}" maxlength="200"></div>
+     <div class="fld"><label for="e_k">Type</label><input type="text" id="e_k" value="${esc(e.kind)}" maxlength="120" placeholder="minutes, letter, policy, report"></div>
+   </div>
+   <div class="fld"><label for="e_l">Where it lives</label><input type="text" id="e_l" value="${esc(e.location)}" maxlength="500"></div>
+   <div class="row c3">
+     <div class="fld"><label for="e_p">Program</label><select id="e_p">
+       ${opts(S.programs.map(p=>({id:p.id,label:p.name})), e.programId, "Not program specific")}</select></div>
+     <div class="fld"><label for="e_o">Owner</label><input type="text" id="e_o" value="${esc(e.owner)}" maxlength="120"></div>
+     <div class="fld"><label for="e_v">Last verified</label><input type="date" id="e_v" value="${esc(e.verified)}"></div>
+   </div>
+   <div class="fld"><label for="e_r">Retention</label><input type="text" id="e_r" value="${esc(e.retention)}" maxlength="200" placeholder="per institutional retention policy, confirm locally"></div>
+   <div class="fld"><label for="e_no">Notes</label><textarea id="e_no">${esc(e.notes)}</textarea></div>
+   <div class="mf">${editing?`<button class="btn dgr" data-x="del">Delete</button>`:""}
+     <span class="sp"></span><button class="btn" data-x="cancel">Cancel</button>
+     <button class="btn pri" data-x="save">Save</button></div>`);
+  const m=document.getElementById("mod"), g=i=>m.querySelector("#"+i);
+  m.querySelector('[data-x="cancel"]').onclick=closeModal;
+  if(editing) m.querySelector('[data-x="del"]').onclick=()=>{ closeModal();
+    confirmBox("Delete this record?","<p>This cannot be undone.</p>","Delete",
+      ()=>{ S.evidence=S.evidence.filter(x=>x.id!==e.id); save(); render(); toast("Deleted."); },true); };
+  m.querySelector('[data-x="save"]').onclick=()=>{
+    const nm=g("e_n").value.trim(); if(!nm){ toast("Name the document."); return; }
+    Object.assign(e,{name:nm,kind:g("e_k").value.trim(),location:g("e_l").value.trim(),
+      programId:g("e_p").value,owner:g("e_o").value.trim(),verified:g("e_v").value,
+      retention:g("e_r").value.trim(),notes:g("e_no").value,updated:stamp()});
+    if(!editing) S.evidence.push(e);
+    save(); closeModal(); render(); toast("Saved.");
+  };
+}
+function vEvidence(){
+  const list=S.evidence.slice().sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  return `
+  <div class="note"><strong>Evidence and document tracking.</strong> A pointer list, not a document store.
+  Record what exists, where it lives, who owns it, and when you last checked that it was current.</div>
+  <div class="bar noprint"><button class="btn pri" data-newev="1">Add record</button>
+    <span style="flex:1"></span><button class="btn" onclick="window.print()">Print</button></div>
+  <div class="card">${list.length? `<div class="tw"><table><thead><tr>
+    <th>Document</th><th>Type</th><th>Location</th><th>Program</th><th>Owner</th><th>Last verified</th><th class="noprint"></th></tr></thead>
+    <tbody>${list.map(e=>{
+      const stale = e.verified && daysFromToday(e.verified) < -365;
+      return `<tr><td><strong>${esc(e.name)}</strong>${e.notes?`<div class="tiny">${esc(e.notes.slice(0,90))}</div>`:""}</td>
+      <td>${esc(e.kind)}</td><td class="tiny">${esc(e.location)}</td>
+      <td>${esc(progName(e.programId))||"&mdash;"}</td><td>${esc(e.owner)||"&mdash;"}</td>
+      <td>${e.verified?`<span class="chip ${stale?"c-amb":"c-gry"}">${esc(fmtShort(e.verified))}</span>`:`<span class="chip c-amb tent">never</span>`}</td>
+      <td class="noprint"><button class="btn sm" data-eev="${esc(e.id)}">Edit</button></td></tr>`;}).join("")}
+    </tbody></table></div>` : `<div class="empty">Nothing tracked yet.</div>`}</div>`;
+}
+
+/* ---------- notes and parking lot ---------- */
+function vNotes(){
+  const notes=S.notes.slice().sort((a,b)=>a.updated<b.updated?1:-1);
+  return `
+  <div class="bar noprint"><button class="btn pri" data-newnote="1">New note</button>
+    <span style="flex:1"></span><button class="btn" onclick="window.print()">Print</button></div>
+  <div class="grid g2">
+    <div>
+      <h2 style="margin-bottom:.6rem">Notes</h2>
+      ${notes.length? notes.map(n=>`<div class="card"><div class="hd"><h3>${esc(n.title||"Untitled")}</h3>
+        <span class="sp"></span><button class="btn sm noprint" data-enote="${esc(n.id)}">Edit</button></div>
+        <p>${nl2br(n.body)}</p>
+        <div class="tiny">Updated ${esc(new Date(n.updated).toLocaleString())}</div></div>`).join("")
+        : `<div class="empty">No notes yet. Use these for rotation schedules, committee rosters, project plans, or anything the standard pages do not cover.</div>`}
+    </div>
+    <div>
+      <h2 style="margin-bottom:.6rem">Parking lot</h2>
+      <div class="card">
+        <div class="bar" style="margin-bottom:.6rem">
+          <div class="fld grow"><label for="pk">Idea for later</label><input type="text" id="pk" maxlength="300"></div>
+          <button class="btn pri noprint" data-addpark="1">Add</button></div>
+        ${S.parking.length? S.parking.map((p,i)=>`<div class="item"><div class="bd">
+          <div class="t" style="font-weight:500">${esc(p.text)}</div>
+          <div class="tiny">${esc(new Date(p.created).toLocaleDateString())}</div></div>
+          <div class="acts noprint">
+            <button class="btn sm" data-parkpromote="${i}">Make it an item</button>
+            <button class="btn sm dgr" data-parkdel="${i}">Remove</button></div></div>`).join("")
+          : `<div class="empty">Nothing parked.</div>`}
+      </div>
+    </div>
+  </div>`;
+}
+function noteModal(id){
+  const n = id? S.notes.find(x=>x.id===id) : {id:uid("n"), title:"", body:"", created:stamp(), updated:stamp()};
+  const editing=!!id;
+  openModal(`<h2 id="modTitle">${editing?"Edit note":"New note"}</h2>
+   <div class="fld"><label for="n_t">Title</label><input type="text" id="n_t" value="${esc(n.title)}" maxlength="180"></div>
+   <div class="fld"><label for="n_b">Note</label><textarea id="n_b" style="min-height:11rem">${esc(n.body)}</textarea></div>
+   <div class="mf">${editing?`<button class="btn dgr" data-x="del">Delete</button>`:""}
+     <span class="sp"></span><button class="btn" data-x="cancel">Cancel</button>
+     <button class="btn pri" data-x="save">Save</button></div>`);
+  const m=document.getElementById("mod");
+  m.querySelector('[data-x="cancel"]').onclick=closeModal;
+  if(editing) m.querySelector('[data-x="del"]').onclick=()=>{ closeModal();
+    confirmBox("Delete this note?","<p>This cannot be undone.</p>","Delete",
+      ()=>{ S.notes=S.notes.filter(x=>x.id!==n.id); save(); render(); toast("Deleted."); },true); };
+  m.querySelector('[data-x="save"]').onclick=()=>{
+    n.title=m.querySelector("#n_t").value.trim(); n.body=m.querySelector("#n_b").value; n.updated=stamp();
+    if(!editing) S.notes.push(n);
+    save(); closeModal(); render(); toast("Saved.");
+  };
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   VIEWS D: in-app guide, data, backup, import, settings.
+   ============================================================ */
+
+function download(name, text, mime){
+  const blob=new Blob([text],{type:(mime||"application/json")+";charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },400);
+}
+function stampName(){ const d=new Date();
+  return d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+"-"+p2(d.getHours())+p2(d.getMinutes()); }
+function exportJSON(quiet){
+  const payload={ app:"FULGME Planner", ay:AY, schema:SCHEMA, exportedAt:stamp(), data:S };
+  download("fulgme-planner-backup-"+stampName()+".json", JSON.stringify(payload,null,2));
+  if(!quiet) toast("Backup downloaded.");
+}
+function csvCell(v){ const s=String(v==null?"":v); return '"'+s.replace(/"/g,'""')+'"'; }
+function exportCSV(){
+  const rows=sortTasks(applyFilters(visibleTasks()));
+  const head=["Title","Role","Program","Category","Fellowship workstream","Status","Priority",
+    "Due date","Date confirmed","Owner","Source or authority","Depends on","Recurrence",
+    "Notes","Link","Archived","Completed","Created","Last updated"];
+  const body=rows.map(t=>[t.title, ROLES[t.role]?ROLES[t.role].label:t.role, progName(t.program), t.cat,
+    (GI_AREAS.find(a=>a.id===t.area)||{}).label||"", statusOf(t.status).label,
+    (PRIS[t.pri]||{}).label||"", t.due, t.confirmed?"Yes":"No", t.owner, t.source,
+    (getTask(t.dependsOn)||{}).title||"", ruleText(t.rrule), t.notes, t.link,
+    t.archived?"Yes":"No", t.completedAt, t.created, t.updated].map(csvCell).join(","));
+  download("fulgme-planner-tasks-"+stampName()+".csv", "﻿"+[head.map(csvCell).join(",")].concat(body).join("\r\n"), "text/csv");
+  toast(rows.length+" rows exported.");
+}
+
+function validateImport(obj){
+  const errs=[], warns=[];
+  if(!obj || typeof obj!=="object") { errs.push("The file is not a JSON object."); return {errs,warns}; }
+  const d = obj.data && typeof obj.data==="object" ? obj.data : obj;
+  if(!d || typeof d!=="object"){ errs.push("No planner data found in the file."); return {errs,warns}; }
+  const need=["tasks","programs"];
+  need.forEach(k=>{ if(d[k]!=null && !Array.isArray(d[k])) errs.push("`"+k+"` is present but is not a list."); });
+  if(!Array.isArray(d.tasks) && !Array.isArray(d.programs) && !d.monthly)
+    errs.push("This file contains no tasks, programs, or monthly pages. It does not look like a planner backup.");
+  if(Array.isArray(d.tasks)){
+    d.tasks.forEach((t,i)=>{
+      if(!t || typeof t!=="object"){ errs.push("Task "+(i+1)+" is not a record."); return; }
+      if(typeof t.title!=="string") warns.push("Task "+(i+1)+" has no title and will import as untitled.");
+      if(t.due && !/^\d{4}-\d{2}-\d{2}$/.test(t.due)) warns.push("Task "+(i+1)+" has an unreadable due date and it will be cleared.");
+    });
+  }
+  if(obj.ay && obj.ay!==AY) warns.push("This backup is labelled academic year "+String(obj.ay)+", not "+AY+".");
+  if(obj.schema && Number(obj.schema)>SCHEMA) warns.push("The file was written by a newer version of this planner. Some fields may be ignored.");
+  return {errs,warns,data:d};
+}
+function doImport(text){
+  let obj=null;
+  try{ obj=JSON.parse(text); }
+  catch(e){ confirmBox("That file could not be read","<p>It is not valid JSON, so nothing was changed. Your existing planner is untouched.</p>","Close",()=>{}); return; }
+  const v=validateImport(obj);
+  if(v.errs.length){
+    openModal(`<h2 id="modTitle">Import refused</h2>
+      <p>Nothing was changed. Your existing planner is untouched.</p>
+      <ul>${v.errs.map(e=>`<li>${esc(e)}</li>`).join("")}</ul>
+      <div class="mf"><span class="sp"></span><button class="btn pri" data-x="cancel">Close</button></div>`);
+    document.getElementById("mod").querySelector('[data-x="cancel"]').onclick=closeModal;
+    return;
+  }
+  const d=v.data;
+  const counts=`${(d.tasks||[]).length} items, ${(d.programs||[]).length} programs, ${(d.concerns||[]).length} concern records,
+    ${(d.meetings||[]).length} meetings, ${(d.projects||[]).length} projects, ${(d.evidence||[]).length} evidence records,
+    ${(d.notes||[]).length} notes`;
+  const cur=`${S.tasks.length} items, ${S.programs.length} programs, ${S.concerns.length} concern records,
+    ${S.meetings.length} meetings, ${S.projects.length} projects, ${S.evidence.length} evidence records, ${S.notes.length} notes`;
+  openModal(`<h2 id="modTitle">Replace your planner with this file?</h2>
+    <div class="warn"><strong>This replaces everything in your account, on every device.</strong> A backup of what
+    you have now downloads first, automatically, before anything is overwritten.</div>
+    <p><strong>File contains:</strong> ${esc(counts)}</p>
+    <p><strong>You currently have:</strong> ${esc(cur)}</p>
+    ${v.warns.length? `<details class="acc" open><summary>${v.warns.length} warning(s)</summary><div>
+      <ul>${v.warns.slice(0,12).map(w=>`<li class="tiny">${esc(w)}</li>`).join("")}</ul></div></details>`:""}
+    <div class="mf"><span class="sp"></span>
+      <button class="btn" data-x="cancel">Cancel</button>
+      <button class="btn pri" data-x="ok">Back up, then replace</button></div>`);
+  const m=document.getElementById("mod");
+  m.querySelector('[data-x="cancel"]').onclick=closeModal;
+  m.querySelector('[data-x="ok"]').onclick=()=>{
+    exportJSON(true);
+    setTimeout(()=>{
+      S = mergeState(d);
+      S.tasks.forEach(t=>{ if(t.due && !/^\d{4}-\d{2}-\d{2}$/.test(t.due)) t.due=""; if(typeof t.title!=="string") t.title="Untitled"; });
+      save(); closeModal(); render(); toast("Planner replaced. A backup of the previous version was downloaded.", 5000);
+    }, 600);
+  };
+}
+
+function vData(){
+  const n=t=>String(t);
+  return `
+  <div class="note"><strong>Where your data lives.</strong> Your planner is stored in your FULGME
+  Planner account, privately. Sign in from any browser or device and your planner is there. Each
+  account sees only its own data; that separation is enforced by the database itself, not just by the
+  page. Do not store confidential trainee performance information here.</div>
+
+  <div class="card"><div class="hd"><h2>Account</h2></div>
+    <p class="tiny">Signed in as <strong id="acctEmail2"></strong>. Use Sign out in the sidebar to
+    switch accounts.</p>
+    <div class="row c2">
+      <div class="fld"><label for="np1">New password</label><input type="password" id="np1" minlength="8" autocomplete="new-password"></div>
+      <div class="fld"><label for="np2">Confirm new password</label><input type="password" id="np2" minlength="8" autocomplete="new-password"></div>
+    </div>
+    <button class="btn" data-chpw="1">Change password</button>
+  </div>
+
+  <div class="grid g2">
+    <div class="card"><div class="hd"><h2>Backup and restore</h2></div>
+      <p class="tiny">Export writes a readable JSON file containing everything: items, programs, concerns,
+      meetings, projects, evidence, notes, monthly pages, reflections, your custom categories, statuses,
+      sources, and recurrence rules. Importing that file restores all of it, so a monthly export is your
+      own copy of your own work, independent of any service.</p>
+      <div class="bar" style="margin-top:.7rem">
+        <button class="btn pri" data-export="1">Export backup (JSON)</button>
+        <button class="btn" data-exportcsv="1">Export items (CSV)</button>
+      </div>
+      <div class="fld" style="margin-top:.8rem">
+        <label for="impFile">Import a backup file</label>
+        <input type="file" id="impFile" accept=".json,application/json">
+        <p class="tiny" style="margin-top:.35rem">The file is checked before anything is replaced. A malformed
+        file is refused and your planner is left alone. A valid file triggers an automatic backup download first.</p>
+      </div>
+      <p class="tiny">Last change saved: ${esc(S.settings.savedAt? new Date(S.settings.savedAt).toLocaleString():"none yet")}</p>
+    </div>
+
+    <div class="card"><div class="hd"><h2>What is in the planner</h2></div>
+      <div class="tw"><table><tbody>
+        <tr><td>Items</td><td>${n(S.tasks.length)} (${n(S.tasks.filter(t=>!isDone(t)&&!t.archived).length)} open)</td></tr>
+        <tr><td>Programs</td><td>${n(S.programs.length)}</td></tr>
+        <tr><td>Concerns and action plans</td><td>${n(S.concerns.length)} (${n(S.concerns.filter(c=>c.open).length)} open)</td></tr>
+        <tr><td>Meetings</td><td>${n(S.meetings.length)}</td></tr>
+        <tr><td>Decisions recorded</td><td>${n(S.meetings.reduce((a,m)=>a+((m.decisions||[]).length),0))}</td></tr>
+        <tr><td>Projects</td><td>${n(S.projects.length)}</td></tr>
+        <tr><td>Evidence records</td><td>${n(S.evidence.length)}</td></tr>
+        <tr><td>Notes and parked ideas</td><td>${n(S.notes.length)} / ${n(S.parking.length)}</td></tr>
+      </tbody></table></div>
+    </div>
+  </div>
+
+  <div class="card"><div class="hd"><h2>Settings</h2></div>
+    <div class="fld"><label style="display:flex;align-items:center;gap:.45rem;margin:0">
+      <input type="checkbox" id="setUME" ${S.settings.showUME?"checked":""} style="width:auto;accent-color:var(--pur)">
+      Show undergraduate medical education content</label>
+      <p class="tiny">The planner content covers both graduate and undergraduate medical education.
+      UME is off by default; turning it on adds the UME lists to every month page and to the
+      recurring-work page.</p></div>
+    <div class="row c3">
+      <div class="fld"><label for="setCats">Categories (one per line)</label>
+        <textarea id="setCats" style="min-height:8rem">${esc(S.settings.cats.join("\n"))}</textarea></div>
+      <div class="fld"><label for="setStat">Statuses (one per line)</label>
+        <textarea id="setStat" style="min-height:8rem">${esc(S.settings.statuses.map(s=>s.label).join("\n"))}</textarea>
+        <p class="tiny">Renaming is safe. Removing a status that items still use leaves those items showing the old name.</p></div>
+      <div class="fld"><label for="setSrc">Source or authority options (one per line)</label>
+        <textarea id="setSrc" style="min-height:8rem">${esc(S.settings.sources.join("\n"))}</textarea></div>
+    </div>
+    <button class="btn pri noprint" data-savesettings="1">Save settings</button>
+  </div>
+
+  <div class="card"><div class="hd"><h2>Start over</h2></div>
+    <p class="tiny">Deletes everything in your planner account, on every device, and returns to an empty
+    AY 2026-2027 planner. A backup downloads first.</p>
+    <button class="btn dgr noprint" data-reset="1">Erase and start over</button></div>`;
+}
+
+/* ---------- guide ---------- */
+function vGuide(){
+  return `
+  <div class="card"><h2>How this planner works</h2>
+    <p>Sign in and your planner is there, the same from any device. Everything you type saves as you
+    go; the badge in the sidebar reads Saved, Saving, or Not saved so you always know.</p>
+
+    <h3 style="margin-top:1rem">The two roles</h3>
+    <p>Many people in medical education hold two kinds of work at once: oversight across programs, and
+    the running of their own. Every item carries a role: accreditation oversight, program management,
+    both, or professional development. The selector at the top right filters the whole planner to one
+    role or shows the combined view, and each role also has its own page.</p>
+
+    <h3 style="margin-top:1rem">Adding and changing work</h3>
+    <ul>
+      <li><strong>Add item</strong> appears on every working page. Title, role, category, status, priority,
+        due date, owner, and source are all editable afterwards.</li>
+      <li><strong>Duplicate</strong> copies an item as a fresh to-do.</li>
+      <li><strong>Archive</strong> hides an item without deleting it. Tick "Show archived" in the filters to see them.</li>
+      <li><strong>Delete</strong> asks first and cannot be undone.</li>
+      <li>The tickbox on the left of every row completes or reopens an item.</li>
+    </ul>
+
+    <h3 style="margin-top:1rem">Recurring work</h3>
+    <p>When you create an item, open <em>Make this recurring</em>, choose how often and how many
+    occurrences. Each occurrence becomes its own item with the rule shown on it. Moving or editing
+    one does not disturb the others, which is what you want when a meeting shifts by a week.</p>
+
+    <h3 style="margin-top:1rem">Confirmed against tentative dates</h3>
+    <p>Every dated item has a <strong>source or authority</strong> and a <strong>confirmed</strong> tickbox.
+    Until you tick it, the date shows with a dashed outline and the word <em>confirm</em>. Nothing in this
+    planner was dated for you, because the planner it came from carries no dates either. Confirm every
+    deadline against the current published schedule from the responsible organisation and against your
+    own institutional calendar.</p>
+
+    <h3 style="margin-top:1rem">What completing an item means</h3>
+    <p>It means you did the work and recorded that you did. It is not evidence that an accreditation
+    requirement is met. Use the evidence page to record where the actual documentation lives.</p>
+
+    <h3 style="margin-top:1rem">Official findings against internal observations</h3>
+    <p>On the accreditation page, every concern record is typed: official finding, official area for
+    improvement, internal observation, or planning note. Keep that distinction honest. It is the
+    difference between a defensible record and a confusing one.</p>
+
+    <h3 style="margin-top:1rem">Meetings and decisions</h3>
+    <p>Record a decision with its rationale, owner, and follow-up date, then press
+    <em>Save and create follow-up item</em> to turn it into a tracked task in one step.</p>
+
+    <h3 style="margin-top:1rem">Printing</h3>
+    <p>The Print button on any page produces a clean version with the navigation, buttons, and filters
+    removed. The month page prints as a monthly plan.</p>
+
+    <h3 style="margin-top:1rem">Backing up</h3>
+    <p>Your data lives in your account and follows you between devices, and a monthly Export backup is
+    still worth the habit: it is your own copy of your own work, in a readable file, independent of any
+    service. Importing that file restores everything, including custom categories, recurrence rules,
+    notes, and program records.</p>
+  </div>
+
+  <div class="card"><h2>What came from where</h2>
+    <div class="tw"><table><thead><tr><th>Content</th><th>Source</th></tr></thead><tbody>
+      <tr><td>Month at a Glance lists, monthly themes, reflection prompts, recurring-work descriptions,
+        key resources, year-end review headings</td>
+        <td>The FULGME <em>Academic Year Planner</em>. Seasonal placement carried across, no dates.</td></tr>
+      <tr><td>Calendar grids, week numbering, week dates</td>
+        <td>Calculated for AY 2026-2027 using the planner's stated rule: Monday to Sunday, each week
+        assigned to the month containing its Thursday. AY 2026-2027 has 52 weeks; AY 2027-2028 had 53.</td></tr>
+      <tr><td>The two role workspaces and the program workstream names</td>
+        <td>A starting structure drawn from the planner's recurring-work pages, to edit, not a
+        description of how any institution organises the work.</td></tr>
+      <tr><td>Programs, trainees, faculty, committee dates, accreditation statuses, institutional deadlines</td>
+        <td>Nothing. None was supplied, so none was invented. All of it is yours to enter.</td></tr>
+    </tbody></table></div>
+    <p class="tiny">Anything marked <em>confirm</em> has not been verified against a published source.</p>
+  </div>`;
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   Navigation, routing, event wiring, start-up.
+   ============================================================ */
+
+const NAV=[
+ {grp:"Plan", items:[
+   {id:"dash", ic:"▦", label:"Dashboard"},
+   {id:"year", ic:"▤", label:"Year overview"},
+   {id:"month",ic:"▧", label:"Monthly pages"},
+   {id:"cal",  ic:"▣", label:"Calendar"}]},
+ {grp:"Work", items:[
+   {id:"tasks",  ic:"✓", label:"All items"},
+   {id:"accred", ic:"⚑", label:"Accreditation"},
+   {id:"gi",     ic:"⚕", label:"Program management"},
+   {id:"recur",  ic:"↻", label:"Recurring and resources"}]},
+ {grp:"Record", items:[
+   {id:"meetings",ic:"☷", label:"Meetings and decisions"},
+   {id:"projects",ic:"▸", label:"Projects"},
+   {id:"evidence",ic:"▥", label:"Evidence and documents"},
+   {id:"notes",   ic:"✎", label:"Notes and parking lot"}]},
+ {grp:"Setup", items:[
+   {id:"guide",ic:"?", label:"How to use this"},
+   {id:"data", ic:"⤓", label:"Data and backup"}]}
+];
+const TITLES={dash:["Dashboard","What needs you today"],
+ year:["Year overview","July 2026 to June 2027"],
+ month:["Monthly pages",""], cal:["Calendar",""],
+ tasks:["All items","Everything, filterable"],
+ accred:["Accreditation oversight","The programs you work with"],
+ gi:["Program management","Running your own program"],
+ recur:["Recurring work and resources","Ongoing work that does not belong to one month"],
+ meetings:["Meetings, decisions, follow-up",""],
+ projects:["Projects and improvement work",""],
+ evidence:["Evidence and document tracking",""],
+ notes:["Notes and parking lot",""],
+ guide:["How to use this planner",""],
+ data:["Data, backup, and account",""]};
+
+function navCounts(){
+  const v=visibleTasks(), open=v.filter(t=>!isDone(t));
+  return {dash:open.filter(isOverdue).length, tasks:open.length,
+    accred:S.concerns.filter(c=>c.open).length,
+    gi:S.tasks.filter(t=>!t.archived&&!isDone(t)&&(t.role==="gi"||t.role==="both")).length,
+    meetings:S.meetings.filter(m=>m.date&&m.date>=todayISO()).length,
+    projects:S.projects.filter(p=>!p.archived&&p.status==="Active").length};
+}
+function renderNav(){
+  const c=navCounts();
+  document.getElementById("navs").innerHTML = NAV.map(g=>
+    `<div class="grp">${esc(g.grp)}</div>`+g.items.map(it=>
+      `<button class="navb" data-go="${esc(it.id)}" ${VIEW===it.id?'aria-current="page"':""}>
+        <span class="ic" aria-hidden="true">${it.ic}</span><span>${esc(it.label)}</span>
+        ${c[it.id]?`<span class="ct">${c[it.id]}</span>`:""}</button>`).join("")).join("");
+}
+function render(){
+  renderNav();
+  const t=TITLES[VIEW]||["",""];
+  document.getElementById("viewTitle").textContent=t[0];
+  document.getElementById("viewSub").textContent=
+    (VIEW==="month"||VIEW==="cal")? SEED.months[MONTHIDX].label : t[1];
+  const el=document.getElementById("view");
+  let html="";
+  switch(VIEW){
+    case "dash": html=vDash(); break;
+    case "year": html=vYear(); break;
+    case "month": html=vMonth(); break;
+    case "cal": html=vCal(); break;
+    case "tasks": html=vTasks(); break;
+    case "accred": html=vAccred(); break;
+    case "gi": html=vGI(); break;
+    case "recur": html=vRecurring(); break;
+    case "meetings": html=vMeetings(); break;
+    case "projects": html=vProjects(); break;
+    case "evidence": html=vEvidence(); break;
+    case "notes": html=vNotes(); break;
+    case "guide": html=vGuide(); break;
+    case "data": html=vData(); break;
+    default: html=vDash();
+  }
+  el.innerHTML=html;
+  document.getElementById("roleSel").value=ROLEVIEW;
+  const a2=document.getElementById("acctEmail2");
+  if(a2 && SESSION) a2.textContent=SESSION.user.email||"";
+}
+function go(v, preset){
+  VIEW=v;
+  if(preset!=null) FILT.status=preset;
+  window.scrollTo(0,0);
+  document.getElementById("side").classList.remove("open");
+  document.getElementById("menuBtn").setAttribute("aria-expanded","false");
+  render();
+  document.getElementById("view").focus();
+}
+
+/* ---------- debounced field saving ---------- */
+let sT=null;
+function lazySave(){ clearTimeout(sT); sT=setTimeout(()=>{ save(); }, 450); }
+
+/* ---------- global click delegation ---------- */
+document.addEventListener("click", ev=>{
+  const el=ev.target.closest("[data-go],[data-edit],[data-dup],[data-month],[data-mstep],[data-newtask],"+
+    "[data-eprog],[data-newprog],[data-newcon],[data-econ],[data-emeet],[data-newmeet],[data-adddec],"+
+    "[data-edec],[data-eproj],[data-newproj],[data-eev],[data-newev],[data-enote],[data-newnote],"+
+    "[data-addpark],[data-parkdel],[data-parkpromote],[data-seasadd],[data-recadd],[data-giadd],"+
+    "[data-clearfilt],[data-export],[data-exportcsv],[data-savesettings],[data-reset],[data-chpw],"+
+    "[data-addcontact],[data-delcontact]");
+  if(!el) return;
+  const d=el.dataset;
+
+  if(d.go!=null) return go(d.go, d.preset!==undefined? d.preset : null);
+  if(d.edit) return taskModal(d.edit);
+  if(d.dup) return dupTask(d.dup);
+  if(d.month!=null){ MONTHIDX=Number(d.month); return go("month"); }
+  if(d.mstep!=null){ MONTHIDX=Math.max(0,Math.min(11,MONTHIDX+Number(d.mstep))); return render(); }
+  if(d.newtask!=null){
+    const p={};
+    if(d.newtask==="month") p.due=SEED.months[MONTHIDX].key+"-01";
+    if(d.newtask==="acc") p.role="acc";
+    if(d.newtask==="gi"){ p.role="gi"; p.cat="Administration"; }
+    if(ROLEVIEW!=="all" && !p.role) p.role=ROLEVIEW;
+    return taskModal(null,p);
+  }
+  if(d.giadd) return taskModal(null,{role:"gi", area:d.giadd, cat:"Administration"});
+  if(d.seasadd){
+    const parts=d.seasadd.split("|"); const m=SEED.months.find(x=>x.key===parts[0]);
+    const arr = parts[1]==="gme"? m.gme : parts[1]==="ume"? m.ume : m.shared;
+    return taskModal(null,{title:arr[Number(parts[2])], due:m.key+"-01",
+      role:ROLEVIEW==="all"?"acc":ROLEVIEW, source:"Attached planner (AY27-28 edition)", confirmed:false,
+      notes:"Carried from the Month at a Glance list for "+m.label+". Confirm the date against the current published schedule."});
+  }
+  if(d.recadd){
+    const parts=d.recadd.split("|");
+    return taskModal(null,{title:parts[1], cat:"Accreditation", role:ROLEVIEW==="all"?"acc":ROLEVIEW,
+      source:"Attached planner (AY27-28 edition)",
+      notes:"From the recurring-work page. Ongoing work; set your own cadence and date."});
+  }
+  if(d.eprog) return programModal(d.eprog);
+  if(d.newprog!=null) return programModal(null);
+  if(d.newcon!=null) return concernModal(null, d.newcon||"");
+  if(d.econ) return concernModal(d.econ);
+  if(d.emeet) return meetingModal(d.emeet);
+  if(d.newmeet!=null) return meetingModal(null);
+  if(d.adddec) return decisionModal(d.adddec, null);
+  if(d.edec){ const p=d.edec.split("|"); return decisionModal(p[0], Number(p[1])); }
+  if(d.eproj) return projectModal(d.eproj);
+  if(d.newproj!=null) return projectModal(null);
+  if(d.eev) return evidenceModal(d.eev);
+  if(d.newev!=null) return evidenceModal(null);
+  if(d.enote) return noteModal(d.enote);
+  if(d.newnote!=null) return noteModal(null);
+
+  if(d.addpark!=null){
+    const i=document.getElementById("pk"); const v=i.value.trim();
+    if(!v){ i.focus(); return; }
+    S.parking.push({text:v, created:stamp()}); save(); render(); toast("Parked."); return;
+  }
+  if(d.parkdel!=null){ S.parking.splice(Number(d.parkdel),1); save(); render(); return; }
+  if(d.parkpromote!=null){
+    const p=S.parking[Number(d.parkpromote)]; if(!p) return;
+    S.parking.splice(Number(d.parkpromote),1); save();
+    return taskModal(null,{title:p.text, source:"Local process to confirm"});
+  }
+  if(d.addcontact!=null){
+    openModal(`<h2 id="modTitle">Add contact</h2>
+      <div class="row c3">
+        <div class="fld"><label for="k_n">Name</label><input type="text" id="k_n" maxlength="120"></div>
+        <div class="fld"><label for="k_r">Role</label><input type="text" id="k_r" maxlength="120"></div>
+        <div class="fld"><label for="k_c">Email or extension</label><input type="text" id="k_c" maxlength="160"></div></div>
+      <p class="tiny">Stored in this browser only.</p>
+      <div class="mf"><span class="sp"></span><button class="btn" data-x="cancel">Cancel</button>
+      <button class="btn pri" data-x="save">Add</button></div>`);
+    const m=document.getElementById("mod");
+    m.querySelector('[data-x="cancel"]').onclick=closeModal;
+    m.querySelector('[data-x="save"]').onclick=()=>{
+      const nm=m.querySelector("#k_n").value.trim(); if(!nm){ toast("Name required."); return; }
+      S.contacts.push({name:nm, role:m.querySelector("#k_r").value.trim(), contact:m.querySelector("#k_c").value.trim()});
+      save(); closeModal(); render();
+    };
+    return;
+  }
+  if(d.delcontact!=null){ S.contacts.splice(Number(d.delcontact),1); save(); render(); return; }
+
+  if(d.clearfilt!=null){ FILT={q:"",role:"",cat:"",status:"",pri:"",owner:"",prog:"",from:"",to:"",showArch:false}; return render(); }
+  if(d.export!=null) return exportJSON();
+  if(d.chpw!=null){
+    const a=document.getElementById("np1").value, b=document.getElementById("np2").value;
+    if(a.length<8){ toast("Use at least 8 characters."); return; }
+    if(a!==b){ toast("The two passwords do not match."); return; }
+    SUPA.auth.updateUser({password:a}).then(({error})=>{
+      if(error) toast("Could not change the password: "+error.message, 5000);
+      else { document.getElementById("np1").value=""; document.getElementById("np2").value=""; toast("Password changed."); }
+    });
+    return;
+  }
+  if(d.exportcsv!=null) return exportCSV();
+  if(d.savesettings!=null){
+    const cats=document.getElementById("setCats").value.split("\n").map(s=>s.trim()).filter(Boolean);
+    const stat=document.getElementById("setStat").value.split("\n").map(s=>s.trim()).filter(Boolean);
+    const src =document.getElementById("setSrc").value.split("\n").map(s=>s.trim()).filter(Boolean);
+    if(cats.length) S.settings.cats=cats;
+    if(src.length) S.settings.sources=src;
+    if(stat.length){
+      S.settings.statuses = stat.map((label,i)=>{
+        const old=S.settings.statuses[i];
+        return {id: old? old.id : "s"+i, label, cls: old? old.cls : "c-gry"};
+      });
+    }
+    save(); render(); toast("Settings saved."); return;
+  }
+  if(d.reset!=null){
+    confirmBox("Erase everything and start over?",
+      `<p>Every item, program, concern, meeting, project, note, and monthly page in your account is
+       deleted, on every device. A backup file downloads first so you can undo this by importing it again.</p>`,
+      "Back up, then erase", ()=>{
+        exportJSON(true);
+        setTimeout(()=>{ S=blankState(); seedMonthly(); save(); VIEW="dash"; render();
+          toast("Planner reset. The backup is in your downloads folder.",5000); },600);
+      }, true);
+    return;
+  }
+});
+
+/* ---------- change / input delegation ---------- */
+document.addEventListener("change", ev=>{
+  const t=ev.target;
+  if(t.id==="roleSel"){ ROLEVIEW=t.value; render(); return; }
+  if(t.id==="mSel"){ MONTHIDX=Number(t.value); render(); return; }
+  if(t.dataset.done){ toggleDone(t.dataset.done); return; }
+  if(t.dataset.seas!=null){
+    if(t.checked) S.seasonalDone[t.dataset.seas]=true; else delete S.seasonalDone[t.dataset.seas];
+    save(); return;
+  }
+  if(t.id==="setUME"){ S.settings.showUME=t.checked; save(); render(); return; }
+  if(t.id==="farch"||t.id==="farch2"){ FILT.showArch=t.checked; render(); return; }
+  if(["fq","frole","fcat","fstatus","fpri","fowner","fprog","ffrom","fto"].indexOf(t.id)>=0){
+    const map={fq:"q",frole:"role",fcat:"cat",fstatus:"status",fpri:"pri",fowner:"owner",fprog:"prog",ffrom:"from",fto:"to"};
+    FILT[map[t.id]]=t.value; render();
+    const again=document.getElementById(t.id);
+    if(again && t.id==="fq"){ again.focus(); again.setSelectionRange(again.value.length,again.value.length); }
+    return;
+  }
+  if(t.id==="impFile" && t.files && t.files[0]){
+    const f=t.files[0];
+    const r=new FileReader();
+    r.onload=()=>{ doImport(String(r.result)); t.value=""; };
+    r.onerror=()=>{ toast("The file could not be read."); t.value=""; };
+    r.readAsText(f);
+    return;
+  }
+});
+document.addEventListener("input", ev=>{
+  const t=ev.target, d=t.dataset;
+  if(d.mfield!=null){
+    const m=SEED.months[MONTHIDX], mm=S.monthly[m.key];
+    const p=d.mfield.split(":");
+    if(p[0]==="goals") mm.goals[Number(p[1])]=t.value;
+    else if(p[0]==="reflect") mm.reflect[Number(p[1])]=t.value;
+    else mm[p[0]]=t.value;
+    lazySave(); return;
+  }
+  if(d.annual!=null){ const p=d.annual.split(":");
+    S.annual[Number(p[0])]=S.annual[Number(p[0])]||{}; S.annual[Number(p[0])][p[1]]=t.value; lazySave(); return; }
+  if(d.yearend!=null){ S.yearEnd[d.yearend]=t.value; lazySave(); return; }
+  if(d.ginote!=null){ S.giNotes[d.ginote]=t.value; lazySave(); return; }
+  if(t.id==="fq"){ FILT.q=t.value; clearTimeout(sT); sT=setTimeout(()=>{ render();
+    const a=document.getElementById("fq"); if(a){ a.focus(); a.setSelectionRange(a.value.length,a.value.length); } },320); return; }
+});
+
+/* ---------- modal plumbing ---------- */
+document.getElementById("ov").addEventListener("mousedown", ev=>{ if(ev.target.id==="ov") closeModal(); });
+document.addEventListener("keydown", ev=>{
+  if(ev.key==="Escape" && !document.getElementById("ov").hidden) closeModal();
+});
+document.getElementById("menuBtn").addEventListener("click", ()=>{
+  const s=document.getElementById("side"), b=document.getElementById("menuBtn");
+  const open=s.classList.toggle("open");
+  b.setAttribute("aria-expanded", open?"true":"false");
+});
+window.addEventListener("beforeunload", ()=>{ clearTimeout(sT); save(); clearTimeout(flushT); flush(); });
+
+/* ============================================================
+   Sign-in flow and start-up.
+   ============================================================ */
+let AUTHMODE="signin";
+function authMsg(html, ok){
+  document.getElementById("authMsg").innerHTML = html? `<div class="${ok?"ok":"err"}">${html}</div>` : "";
+}
+function renderAuth(){
+  const go=document.getElementById("authGo"), alt=document.getElementById("authAlt");
+  const pw=document.getElementById("pwRow"), pw2=document.getElementById("pw2Row");
+  const modes={
+    signin:{btn:"Sign in", pw:true, pw2:false,
+      alt:`New here? <button type="button" data-am="signup">Create an account</button> &nbsp;&middot;&nbsp; <button type="button" data-am="forgot">Forgot password</button>`},
+    signup:{btn:"Create account", pw:true, pw2:true,
+      alt:`Already have an account? <button type="button" data-am="signin">Sign in</button>`},
+    forgot:{btn:"Email me a reset link", pw:false, pw2:false,
+      alt:`<button type="button" data-am="signin">Back to sign in</button>`},
+    newpw:{btn:"Set new password", pw:true, pw2:true,
+      alt:``}
+  };
+  const m=modes[AUTHMODE];
+  go.textContent=m.btn; pw.hidden=!m.pw; pw2.hidden=!m.pw2; alt.innerHTML=m.alt;
+  document.getElementById("au_pw").autocomplete = (AUTHMODE==="signin")?"current-password":"new-password";
+  alt.querySelectorAll("[data-am]").forEach(b=>{ b.onclick=()=>{ AUTHMODE=b.dataset.am; authMsg(""); renderAuth(); }; });
+}
+function showAuth(){
+  document.getElementById("app").hidden=true;
+  document.getElementById("auth").hidden=false;
+  renderAuth();
+}
+async function startApp(){
+  document.getElementById("auth").hidden=true;
+  document.getElementById("app").hidden=false;
+  document.getElementById("acctEmail").textContent = SESSION.user.email||"";
+  document.getElementById("todayLbl").textContent = fmt(todayISO());
+  const td=todayISO();
+  if(td>=AY_START && td<=AY_END){
+    const idx=SEED.months.findIndex(m=>m.key===td.slice(0,7));
+    if(idx>=0) MONTHIDX=idx;
+  }
+  setSync("connecting");
+  S=blankState(); seedMonthly(); render();
+  try{
+    await loadAll();
+    setSync("live");
+  }catch(e){
+    setSync("off");
+    toast("Your planner could not be loaded. Check your connection and reload the page.", 7000);
+  }
+  render();
+}
+(function init(){
+  const bad = (typeof window.supabase==="undefined") ||
+    !FULGME_CONFIG.SUPABASE_URL || FULGME_CONFIG.SUPABASE_URL.indexOf("PASTE-")===0 ||
+    !FULGME_CONFIG.SUPABASE_ANON_KEY || FULGME_CONFIG.SUPABASE_ANON_KEY.indexOf("PASTE-")===0;
+  if(bad){
+    showAuth();
+    authMsg("This copy of the planner is not configured yet. The site owner needs to fill in the "+
+      "FULGME_CONFIG block at the top of index.html with the Supabase project URL and anon key.");
+    document.getElementById("authGo").disabled=true;
+    return;
+  }
+  SUPA = window.supabase.createClient(FULGME_CONFIG.SUPABASE_URL, FULGME_CONFIG.SUPABASE_ANON_KEY);
+
+  document.getElementById("authForm").addEventListener("submit", async ev=>{
+    ev.preventDefault();
+    const email=document.getElementById("au_email").value.trim();
+    const pw=document.getElementById("au_pw").value;
+    const pw2=document.getElementById("au_pw2").value;
+    const go=document.getElementById("authGo");
+    authMsg(""); go.disabled=true;
+    try{
+      if(AUTHMODE==="signin"){
+        const {error}=await SUPA.auth.signInWithPassword({email, password:pw});
+        if(error) authMsg(esc(error.message));
+      } else if(AUTHMODE==="signup"){
+        if(pw.length<8){ authMsg("Use a password of at least 8 characters."); }
+        else if(pw!==pw2){ authMsg("The two passwords do not match."); }
+        else{
+          const {data,error}=await SUPA.auth.signUp({email, password:pw});
+          if(error) authMsg(esc(error.message));
+          else if(!data.session) authMsg("Account created. Check your email for a confirmation link, then sign in.", true);
+        }
+      } else if(AUTHMODE==="forgot"){
+        const {error}=await SUPA.auth.resetPasswordForEmail(email, {redirectTo: location.origin+location.pathname});
+        if(error) authMsg(esc(error.message));
+        else authMsg("If that address has an account, a reset link is on its way.", true);
+      } else if(AUTHMODE==="newpw"){
+        if(pw.length<8){ authMsg("Use a password of at least 8 characters."); }
+        else if(pw!==pw2){ authMsg("The two passwords do not match."); }
+        else{
+          const {error}=await SUPA.auth.updateUser({password:pw});
+          if(error) authMsg(esc(error.message));
+          else { authMsg("Password set. Opening your planner.", true); }
+        }
+      }
+    } finally { go.disabled=false; }
+  });
+
+  document.getElementById("signOutBtn").addEventListener("click", async ()=>{
+    await flush();
+    await SUPA.auth.signOut();
+  });
+
+  SUPA.auth.onAuthStateChange((event, session)=>{
+    if(event==="PASSWORD_RECOVERY"){
+      SESSION=session; AUTHMODE="newpw"; showAuth();
+      authMsg("Choose a new password for your account.", true);
+      return;
+    }
+    if(session && (!SESSION || SESSION.user.id!==session.user.id)){
+      SESSION=session;
+      if(AUTHMODE!=="newpw") startApp();
+      return;
+    }
+    SESSION=session||SESSION;
+    if(event==="SIGNED_OUT"){
+      SESSION=null; S=blankState(); seedMonthly(); SHADOW={}; UPSERTS={}; DELETES={};
+      AUTHMODE="signin"; authMsg("Signed out.", true); showAuth();
+    }
+    if(event==="USER_UPDATED" && AUTHMODE==="newpw" && session){
+      SESSION=session; startApp();
+    }
+  });
+
+  SUPA.auth.getSession().then(({data})=>{
+    if(data && data.session){ SESSION=data.session; startApp(); }
+    else showAuth();
+  });
+})();
+</script>
+</body>
+</html>
